@@ -7,7 +7,11 @@
   <style>
     :root { --bg:#01A0C6; --fg:#fff; }
     html,body { height:100%; margin:0; }
-    body { background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; display:grid; place-items:center; padding:24px; }
+    body {
+      background:var(--bg); color:var(--fg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      display:grid; place-items:center; padding:24px;
+    }
     .wrap { width:min(720px,96vw); }
     table { width:100%; border-collapse:collapse; background:rgba(255,255,255,.08); border-radius:12px; overflow:hidden; }
     th,td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.25); text-align:left; }
@@ -17,10 +21,14 @@
     button { padding:10px 14px; border-radius:8px; border:2px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; cursor:pointer; }
     button:hover { background:rgba(255,255,255,.14); }
     .muted { opacity:.85; font-size:14px; }
-    .forbidden { text-align:center; max-width:520px; }
+    .panel { max-width:720px; text-align:center; }
+    .error-box { background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35); padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
+    code { background:rgba(0,0,0,.25); padding:0 6px; border-radius:6px; }
   </style>
 </head>
 <body>
+
+  <!-- APP -->
   <div class="wrap" id="app" hidden>
     <h1>Statistikk</h1>
     <div class="controls">
@@ -39,61 +47,130 @@
     <p class="muted">Oppdateres automatisk hvert 10. sekund.</p>
   </div>
 
-  <div id="forbidden" class="forbidden" hidden>
+  <!-- FORBIDDEN -->
+  <div id="forbidden" class="panel" hidden>
     <h2>Mangler tilgang</h2>
-    <p>Legg til <code>?key=DIN_HEMMELIGE_NØKKEL</code> i URL-en for å se statistikk.</p>
+    <p>Åpne siden med korrekt nøkkel, f.eks.:<br>
+      <code>admin.html?key=DIN_HEMMELIGE_NØKKEL</code></p>
   </div>
 
+  <!-- ERROR -->
+  <div id="error" class="panel" hidden>
+    <h2>Kunne ikke hente data</h2>
+    <p>Det oppstod en feil under tilkobling til Supabase eller ved henting av data.</p>
+    <div id="errorDetails" class="error-box"></div>
+    <details style="margin-top:10px;">
+      <summary>Vanlige årsaker</summary>
+      <ul style="text-align:left">
+        <li>Feil global: bruk <code>supabase.createClient</code> (UMD) – ikke <code>supabasejs.createClient</code>.</li>
+        <li><strong>SUPABASE_URL</strong> eller <strong>ANON KEY</strong> er tom/feil.</li>
+        <li>RLS-policy tillater ikke <code>select</code> (trengs for admin-siden).</li>
+        <li>Prosjektet er pauset – logg inn i Supabase og trykk <em>Resume</em>.</li>
+      </ul>
+    </details>
+  </div>
+
+  <!-- jQuery og Supabase UMD -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-  <script>
-    // Sett din hemmelige token her (må samsvare med ?key=... i URL)
-    const ADMIN_TOKEN = "ludde";
 
-    // === Supabase ===
+  <script>
+    // ===== KONFIGURASJON =====
     const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
-    const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const ADMIN_TOKEN   = "ludde"; // fallback hvis ?key ikke er i URL
+    // =========================
 
-    // Sjekk token i URL
-    const params = new URLSearchParams(location.search);
-    const ok = params.get("key") === ADMIN_TOKEN;
-
-    const appEl = document.getElementById('app');
-    const forbidEl = document.getElementById('forbidden');
-    if(!ok){
-      forbidEl.hidden = false;
-    }else{
-      appEl.hidden = false;
-      boot();
+    // Hjelpefunksjoner for UI
+    function show(id, on=true){ document.getElementById(id).hidden = !on; }
+    function setStatus(msg){ document.getElementById('status').textContent = msg; }
+    function showError(err){
+      show('app', false); show('forbidden', false); show('error', true);
+      const box = document.getElementById('errorDetails');
+      box.textContent = (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
     }
 
-    async function fetchCounts() {
-      const statusEl = document.getElementById('status');
-      statusEl.textContent = 'Henter…';
+    (async function boot(){
+      try {
+        // 1) Token-sjekk
+        const qs = new URLSearchParams(location.search);
+        const key = qs.get('key') || ADMIN_TOKEN;
+        if (!key || key === 'bytt_meg_ut') {
+          // du har ikke satt token; vis forbidden for å unngå tom side
+          show('forbidden', true);
+          return;
+        }
 
-      const { count: uniqCount } = await supabase
-        .from('visitors').select('*', { count: 'exact', head: true });
+        // 2) Supabase createClient – NB: UMD global heter "supabase"
+        if (!window.supabase) throw new Error('Supabase UMD ikke lastet (global "supabase" mangler).');
+        if (!SUPABASE_URL || !SUPABASE_ANON) throw new Error('SUPABASE_URL eller SUPABASE_ANON mangler i admin.html.');
 
-      const { data: evts } = await supabase
-        .from('events').select('event_type');
+        const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-      const counts = { phone:0, email:0, download:0 };
-      (evts || []).forEach(e => { if(counts[e.event_type] !== undefined) counts[e.event_type]++; });
+        // 3) Tilkoblings- og policy-sjekk (SELECT må være tillatt i RLS for admin)
+        setStatus('Tester forbindelse…');
+        const test = await client
+          .from('visitors')
+          .select('*', { count:'exact', head:true });
 
-      document.getElementById('uniq').textContent     = uniqCount ?? 0;
-      document.getElementById('phone').textContent    = counts.phone;
-      document.getElementById('email').textContent    = counts.email;
-      document.getElementById('download').textContent = counts.download;
+        if (test.error) {
+          // Vanlig feil: RLS blokkerer select, eller feil nøkkel/URL
+          throw new Error(`SELECT-feil mot "visitors": ${test.error.message}`);
+        }
 
-      statusEl.textContent = 'Sist oppdatert: ' + new Date().toLocaleTimeString();
-    }
+        // 4) Viser appen hvis token ok og data kan leses
+        show('app', true);
 
-    function boot(){
-      document.getElementById('refreshBtn').addEventListener('click', fetchCounts);
-      fetchCounts();
-      setInterval(fetchCounts, 10000);
-    }
+        async function fetchCounts() {
+          try {
+            setStatus('Henter…');
+
+            // Unike besøk = antall rader i visitors
+            const { count: uniqCount, error: uErr } = await client
+              .from('visitors')
+              .select('*', { count: 'exact', head: true });
+            if (uErr) throw new Error(`Henting "visitors": ${uErr.message}`);
+
+            // Hendelser
+            const { data: evts, error: eErr } = await client
+              .from('events')
+              .select('event_type');
+            if (eErr) throw new Error(`Henting "events": ${eErr.message}`);
+
+            const counts = { phone:0, email:0, download:0 };
+            (evts || []).forEach(e => {
+              if (counts[e.event_type] !== undefined) counts[e.event_type]++;
+            });
+
+            document.getElementById('uniq').textContent     = uniqCount ?? 0;
+            document.getElementById('phone').textContent    = counts.phone;
+            document.getElementById('email').textContent    = counts.email;
+            document.getElementById('download').textContent = counts.download;
+
+            setStatus('Sist oppdatert: ' + new Date().toLocaleTimeString());
+          } catch (err) {
+            console.error(err);
+            setStatus('Feil ved henting');
+            showError(err);
+          }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', fetchCounts);
+        fetchCounts();
+        setInterval(fetchCounts, 10000);
+
+      } catch (err) {
+        console.error(err);
+        // Hvis token er feil, vis forbidden. Ellers vis error-panel.
+        const qs = new URLSearchParams(location.search);
+        const key = qs.get('key') || ADMIN_TOKEN;
+        if (!key || key === 'bytt_meg_ut') {
+          show('forbidden', true);
+        } else {
+          showError(err);
+        }
+      }
+    })();
   </script>
 </body>
 </html>
