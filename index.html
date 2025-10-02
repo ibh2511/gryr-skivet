@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kontakt</title>
+  <style>
+    :root { --bg:#01A0C6; --fg:#fff; }
+    html,body { height:100%; margin:0; }
+    body { background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; display:grid; place-items:center; }
+    .wrap { width:min(560px,92vw); text-align:center; }
+    a.button {
+      display:block; width:100%; padding:14px 16px; margin:10px 0;
+      border-radius:10px; border:2px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.08); color:#fff; text-decoration:none; font-size:18px; backdrop-filter:blur(4px);
+    }
+    a.button:hover { background:rgba(255,255,255,.14); }
+    .hint { opacity:.9; font-size:14px; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Kontakt</h1>
+
+    <a id="telLink" class="button" href="tel:+4712345678">Ring: +47 12 34 56 78</a>
+    <a id="mailLink" class="button" href="mailto:hei@example.org?subject=Hei">Send e-post</a>
+
+    <!-- Statisk nedlasting av ferdig QR-bilde i samme mappe -->
+    <a id="qrBtn" class="button" href="lockscreen-qr.png" download>Last ned skjermlåsbilde med QR-kode</a>
+    <p class="hint">QR-koden peker til denne siden.</p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL  = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+
+    function getVisitorId(){
+      let id = localStorage.getItem("visitor_id");
+      if(!id){ id = uuidv4(); localStorage.setItem("visitor_id", id); }
+      return id;
+    }
+
+    async function ensureVisitor(){
+      const id = getVisitorId();
+      const { data } = await supabase.from('visitors').select('id').eq('id', id).limit(1);
+      if(!data || !data.length){ await supabase.from('visitors').insert({ id }); }
+      return id;
+    }
+
+    async function logEvent(type){
+      const visitor_id = getVisitorId();
+      await supabase.from('events').insert({ visitor_id, event_type: type });
+    }
+
+    (async () => {
+      const firstKey = "visited_once";
+      await ensureVisitor();
+      if(!localStorage.getItem(firstKey)){
+        await logEvent('visit');
+        localStorage.setItem(firstKey, "1");
+      }
+    })();
+
+    $('#telLink').on('click',  () => logEvent('phone'));
+    $('#mailLink').on('click', () => logEvent('email'));
+    $('#qrBtn').on('click',   () => logEvent('download'));
+  </script>
+</body>
+</html>
