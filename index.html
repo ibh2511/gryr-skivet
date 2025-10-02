@@ -22,19 +22,20 @@
   <div class="wrap">
     <h1>Kontakt</h1>
 
-    <a id="telLink" class="button" href="tel:+4712345678">Ring: +47 12 34 56 78</a>
-    <a id="mailLink" class="button" href="mailto:hei@example.org?subject=Hei">Send e-post</a>
-
+    <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
+    <p class="hint">man-fre 09 - 13</p>
+    <a id="mailLink" class="button" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
+    <p class="hint">Trykk på knappen for en ferigskrevet mail, eller send din egen til forbruker@tine.no</p>
     <!-- Statisk nedlasting av ferdig QR-bilde i samme mappe -->
-    <a id="qrBtn" class="button" href="lockscreen-qr.png" download>Last ned skjermlåsbilde med QR-kode</a>
+    <a id="qrBtn" class="button" href="gryr-skivet-qr.png" download>Last ned skjermlåsbilde med QR-kode</a>
     <p class="hint">QR-koden peker til denne siden.</p>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
   <script>
-    const SUPABASE_URL  = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON = "YOUR_SUPABASE_ANON_KEY";
+    const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
+    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
     const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON);
 
     const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
