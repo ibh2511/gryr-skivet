@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin – Statistikk</title>
+  <style>
+    :root { --bg:#01A0C6; --fg:#fff; }
+    html,body { height:100%; margin:0; }
+    body { background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; display:grid; place-items:center; padding:24px; }
+    .wrap { width:min(720px,96vw); }
+    table { width:100%; border-collapse:collapse; background:rgba(255,255,255,.08); border-radius:12px; overflow:hidden; }
+    th,td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.25); text-align:left; }
+    th { background:rgba(255,255,255,.12); }
+    tr:last-child td { border-bottom:none; }
+    .controls { margin:16px 0 24px; display:flex; gap:10px; align-items:center; }
+    button { padding:10px 14px; border-radius:8px; border:2px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; cursor:pointer; }
+    button:hover { background:rgba(255,255,255,.14); }
+    .muted { opacity:.85; font-size:14px; }
+    .forbidden { text-align:center; max-width:520px; }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app" hidden>
+    <h1>Statistikk</h1>
+    <div class="controls">
+      <button id="refreshBtn">Oppdater nå</button>
+      <span class="muted" id="status">—</span>
+    </div>
+    <table>
+      <thead><tr><th>Metrikk</th><th>Antall</th></tr></thead>
+      <tbody>
+        <tr><td>Unike besøk</td><td id="uniq">…</td></tr>
+        <tr><td>Telefon</td><td id="phone">…</td></tr>
+        <tr><td>E-post</td><td id="email">…</td></tr>
+        <tr><td>Nedlastinger</td><td id="download">…</td></tr>
+      </tbody>
+    </table>
+    <p class="muted">Oppdateres automatisk hvert 10. sekund.</p>
+  </div>
+
+  <div id="forbidden" class="forbidden" hidden>
+    <h2>Mangler tilgang</h2>
+    <p>Legg til <code>?key=DIN_HEMMELIGE_NØKKEL</code> i URL-en for å se statistikk.</p>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script>
+    // Sett din hemmelige token her (må samsvare med ?key=... i URL)
+    const ADMIN_TOKEN = "bytt_meg_ut";
+
+    // === Supabase ===
+    const SUPABASE_URL  = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON = "YOUR_SUPABASE_ANON_KEY";
+    const supabase = supabasejs.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    // Sjekk token i URL
+    const params = new URLSearchParams(location.search);
+    const ok = params.get("key") === ADMIN_TOKEN;
+
+    const appEl = document.getElementById('app');
+    const forbidEl = document.getElementById('forbidden');
+    if(!ok){
+      forbidEl.hidden = false;
+    }else{
+      appEl.hidden = false;
+      boot();
+    }
+
+    async function fetchCounts() {
+      const statusEl = document.getElementById('status');
+      statusEl.textContent = 'Henter…';
+
+      const { count: uniqCount } = await supabase
+        .from('visitors').select('*', { count: 'exact', head: true });
+
+      const { data: evts } = await supabase
+        .from('events').select('event_type');
+
+      const counts = { phone:0, email:0, download:0 };
+      (evts || []).forEach(e => { if(counts[e.event_type] !== undefined) counts[e.event_type]++; });
+
+      document.getElementById('uniq').textContent     = uniqCount ?? 0;
+      document.getElementById('phone').textContent    = counts.phone;
+      document.getElementById('email').textContent    = counts.email;
+      document.getElementById('download').textContent = counts.download;
+
+      statusEl.textContent = 'Sist oppdatert: ' + new Date().toLocaleTimeString();
+    }
+
+    function boot(){
+      document.getElementById('refreshBtn').addEventListener('click', fetchCounts);
+      fetchCounts();
+      setInterval(fetchCounts, 10000);
+    }
+  </script>
+</body>
+</html>
