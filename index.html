@@ -28,7 +28,7 @@
       --accent:#F4D31F;
       --btn-bg: rgba(255,255,255,.08);
       --btn-bg-hover: rgba(255,255,255,.14);
-      --btn-border: rgba(255,255,255,.35);
+      --btn-border: rgba(255,255,255,.35);          /* <- knappeborderfarge */
       --btn-border-strong: rgba(255,255,255,.85);
     }
     * { box-sizing: border-box; }
@@ -106,7 +106,7 @@
     }
     .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
 
-    /* Footer – bølge i toppen, deling inne i bølgen */
+    /* Footer – bølge i toppen, hvit FB-delingslenke inne i bølgen */
     footer{
       position: relative;
       width: 100%;
@@ -118,21 +118,21 @@
       position: absolute;
       top: -1px; left: 0;
       width: 100%;
-      height: 100px;
+      height: 120px;
       display: block;
       line-height: 0;
       pointer-events: none;
     }
     .footer-inner{
       position: relative;
-      padding: 28px 16px 18px; /* plass slik at lenken ligger "i" bølgen */
+      padding: 36px 16px 18px; /* løfter lenken slik at den "står i" bølgen */
       display: flex;
       justify-content: center;
     }
     .fb-share{
       display: inline-flex; align-items: center; gap: 8px;
       font-weight: 800; text-decoration: underline;
-      color: #fff;              /* hvit tekst i bølgen */
+      color: #fff;                      /* hvit link over bølgen */
       opacity: .95;
     }
     .fb-share:hover{ opacity: 1; }
@@ -198,10 +198,15 @@
     </div>
   </div>
 
-  <!-- Footer: bølge (øverst) + hvit FB-delingslenke inne i bølgen -->
+  <!-- Footer: bølge (øverst) i samme farge som knappeborderen + hvit FB-delingslenke -->
   <footer>
-    <svg class="wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
-      <path fill="#01A0C6" d="M0,64L60,58.7C120,53,240,43,360,53.3C480,64,600,96,720,101.3C840,107,960,85,1080,64C1200,43,1320,21,1380,10.7L1440,0L1440,100L1380,100C1320,100,1200,100,1080,100C960,100,840,100,720,100C600,100,480,100,360,100C240,100,120,100,60,100L0,100Z"></path>
+    <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="var(--btn-border)"
+        d="
+        M0,60
+        Q45,90 90,60  T180,60  T270,60  T360,60  T450,60  T540,60
+        T630,60  T720,60  T810,60  T900,60  T990,60  T1080,60 T1170,60 T1260,60 T1350,60 T1440,60
+        L1440,120 L0,120 Z" />
     </svg>
     <div class="footer-inner">
       <a id="fbShare" class="fb-share" href="#" rel="noopener">
@@ -218,7 +223,7 @@
   <!-- Supabase UMD -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script>
-    // Supabase-kredentialer (kan injiseres via GitHub Actions hvis ønskelig)
+    // Supabase-kredentialer (injiseres av GitHub Actions)
     const SUPABASE_URL  = "__SUPABASE_URL__";
     const SUPABASE_ANON = "__SUPABASE_ANON__";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
