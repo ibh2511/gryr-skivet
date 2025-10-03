@@ -60,10 +60,10 @@
   .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
   .inline-email a{ color:#fff; font-weight:800; text-decoration:underline; }
 
-  /* FOOTER – full-bleed bølge nederst med fast frekvens og kontrollert tekstposisjon */
+  /* FOOTER – full-bleed bølge nederst med fast frekvens og mer luft */
   :root{
-    --wave-h: 180px;         /* total høyde på bølgefeltet */
-    --wave-pos: 0.70;        /* 0=toppen, 1=bunnen. 0.70 legger teksten under toppene */
+    --wave-h: 220px;   /* Økt høyde for mer luft (før var 180) */
+    --wave-pos: 0.70;  /* 0=toppen, 1=bunnen – legger teksten under bølgetoppene */
   }
   
   footer{
@@ -99,32 +99,32 @@
   .wave-svg path,
   .wave-svg rect{ fill: var(--btn-border); }
   
-  /* Plasser FB-lenken i «trough»-sonen, under bølgetoppene */
+  /* Plasser FB-lenken under toppene, med god luft over/under */
   .fb-share.on-wave{
     position:absolute;
     left:50%;
-    top: calc(var(--wave-h) * var(--wave-pos));  /* styr høyden her */
-    transform: translate(-50%, -50%);            /* sentrer rundt posisjonen */
+    top: calc(var(--wave-h) * var(--wave-pos)); /* styr pos pr. høyde */
+    transform: translate(-50%, -50%);
     display:inline-flex; align-items:center; gap:8px;
     color:#fff; font-weight:800; text-decoration:underline;
     z-index:2;
-    padding:6px 10px;   /* liten intern luft, ingen bakplate */
+    padding:6px 10px; /* liten intern luft, ingen bakplate */
   }
   
   .fb-share.on-wave:hover{ opacity:1; }
   .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
   
-  /* Små skjermer: litt lavere bølge + senk teksten enda litt */
+  /* Små skjermer: litt lavere felt + litt lavere pos i bølgen */
   @media (max-width: 480px){
     :root{
-      --wave-h: 160px;
-      --wave-pos: 0.73;   /* litt nærmere bunnen → tryggere under toppene */
+      --wave-h: 190px;   /* var 160–180; gir mer luft enn før */
+      --wave-pos: 0.72;  /* senk litt */
     }
   }
   @media (max-width: 360px){
     :root{
-      --wave-h: 150px;
-      --wave-pos: 0.75;   /* enda litt ned på ekstra små skjermer */
+      --wave-h: 180px;
+      --wave-pos: 0.74;
     }
   }
 
