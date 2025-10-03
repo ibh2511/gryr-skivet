@@ -26,172 +26,181 @@
     code { background:rgba(0,0,0,.25); padding:0 6px; border-radius:6px; }
   </style>
 </head>
+<!-- behold head + base-styles slik du har; her er body-innhold og skriptet -->
 <body>
-
-  <!-- APP -->
   <div class="wrap" id="app" hidden>
     <h1>Statistikk</h1>
     <div class="controls">
       <button id="refreshBtn">Oppdater nå</button>
+      <button id="resetBtn" style="margin-left:auto;">Nullstill data</button>
       <span class="muted" id="status">—</span>
     </div>
+
     <table>
       <thead><tr><th>Metrikk</th><th>Antall</th></tr></thead>
       <tbody>
         <tr><td>Unike besøk</td><td id="uniq">…</td></tr>
         <tr><td>Telefon</td><td id="phone">…</td></tr>
-        <tr><td>E-post</td><td id="email">…</td></tr>
+        <tr><td>E-post knapp</td><td id="email">…</td></tr>
+        <tr><td>E-post lenke</td><td id="email_link">…</td></tr>
         <tr><td>Nedlastinger</td><td id="download">…</td></tr>
       </tbody>
     </table>
-    <p class="muted">Oppdateres automatisk hvert 30. sekund.</p>
+
+    <h2 style="margin-top:28px;">Siste hendelser</h2>
+    <table>
+      <thead><tr><th>Tid</th><th>Hendelse</th></tr></thead>
+      <tbody id="recentBody">
+        <tr><td colspan="2" class="muted">Laster…</td></tr>
+      </tbody>
+    </table>
+
+    <p class="muted" id="updatedAt">—</p>
   </div>
 
-  <!-- FORBIDDEN -->
-  <div id="forbidden" class="panel" hidden>
+  <div id="forbidden" class="forbidden" hidden>
     <h2>Mangler tilgang</h2>
-    <p>Åpne siden med korrekt nøkkel, f.eks.:<br>
-      <code>admin.html?key=DIN_HEMMELIGE_NØKKEL</code></p>
+    <p>Legg til <code>?key=DIN_HEMMELIGE_NØKKEL</code> i URL.</p>
   </div>
 
-  <!-- ERROR -->
   <div id="error" class="panel" hidden>
     <h2>Kunne ikke hente data</h2>
-    <p>Det oppstod en feil under tilkobling til Supabase eller ved henting av data.</p>
+    <p>Feil ved tilkobling eller henting.</p>
     <div id="errorDetails" class="error-box"></div>
-    <details style="margin-top:10px;">
-      <summary>Vanlige årsaker</summary>
-      <ul style="text-align:left">
-        <li>Feil global: bruk <code>supabase.createClient</code> (UMD) – ikke <code>supabasejs.createClient</code>.</li>
-        <li><strong>SUPABASE_URL</strong> eller <strong>ANON KEY</strong> er tom/feil.</li>
-        <li>RLS-policy tillater ikke <code>select</code> (trengs for admin-siden).</li>
-        <li>Prosjektet er pauset – logg inn i Supabase og trykk <em>Resume</em>.</li>
-      </ul>
-    </details>
   </div>
 
-  <!-- jQuery og Supabase UMD -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-
   <script>
-    // ===== KONFIGURASJON =====
-    const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
-    const ADMIN_TOKEN   = "hemmelig"; // fallback hvis ?key ikke er i URL
-    // =========================
+    const SUPABASE_URL  = "__SUPABASE_URL__";   // fyll inn (eller la Actions injisere)
+    const SUPABASE_ANON = "__SUPABASE_ANON__";
+    const FALLBACK_ADMIN_KEY = "__ADMIN_TOKEN__"; // evt. tom streng hvis du kun vil bruke ?key=
 
-   // UI helpers
     function show(id, on=true){ document.getElementById(id).hidden = !on; }
-    function setStatus(msg){ const el = document.getElementById('status'); if (el) el.textContent = msg; }
+    function setStatus(msg){ document.getElementById('status').textContent = msg; }
+    function setUpdated(ts){ document.getElementById('updatedAt').textContent = 'Sist oppdatert: ' + ts; }
     function showError(err){
       show('app', false); show('forbidden', false); show('error', true);
-      const box = document.getElementById('errorDetails');
-      box.textContent = (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
+      document.getElementById('errorDetails').textContent = (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
     }
-  
-    // Dynamisk skriptlaster som prøver flere kilder
+
     function loadScript(src){
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
-        s.src = src;
-        s.async = true;
-        s.crossOrigin = 'anonymous';
-        s.onload = () => resolve();
-        s.onerror = () => reject(new Error('Kunne ikke laste: ' + src));
+        s.src = src; s.async = true; s.crossOrigin = 'anonymous';
+        s.onload = resolve; s.onerror = () => reject(new Error('Kunne ikke laste: '+src));
         document.head.appendChild(s);
       });
     }
-  
     async function ensureSupabaseUMD(){
-      // Prøv jsDelivr først (mest stabilt), så unpkg som fallback
       const cdns = [
         "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
         "https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"
       ];
-      let lastError;
-      for (const url of cdns) {
-        try {
-          await loadScript(url);
-          if (window.supabase) return; // suksess
-        } catch (e) {
-          lastError = e;
-        }
-      }
-      throw lastError || new Error('Supabase UMD ikke lastet fra noen CDN.');
+      let err;
+      for (const url of cdns) { try { await loadScript(url); if (window.supabase) return; } catch(e){ err=e; } }
+      throw err || new Error('Supabase UMD ikke lastet.');
     }
-  
-    (async function bootWrapper(){
+
+    (async function boot(){
       try {
-        // 1) Token-sjekk
-        const qs  = new URLSearchParams(location.search);
-        const key = qs.get('key') || ADMIN_TOKEN;
-        if (!key || key === 'hemmelig') {
-          show('forbidden', true);
-          return;
-        }
-  
-        // 2) Last inn Supabase UMD robust
+        const params = new URLSearchParams(location.search);
+        const ADMIN_KEY = params.get("key") || FALLBACK_ADMIN_KEY;
+        if (!ADMIN_KEY || ADMIN_KEY === "__ADMIN_TOKEN__") { show('forbidden', true); return; }
+
         await ensureSupabaseUMD();
-        if (!window.supabase) throw new Error('Supabase UMD ikke lastet (global "supabase" mangler).');
-  
-        if (!SUPABASE_URL || !SUPABASE_ANON) throw new Error('SUPABASE_URL eller SUPABASE_ANON mangler i admin.html.');
+        if (!SUPABASE_URL || !SUPABASE_ANON) throw new Error('Mangler SUPABASE_URL/ANON.');
         const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  
-        // 3) Test SELECT (bekrefter tilkobling + RLS)
-        setStatus('Tester forbindelse...');
+
+        // Test SELECT
+        setStatus('Tester forbindelse…');
         const test = await client.from('visitors').select('*', { count:'exact', head:true });
         if (test.error) throw new Error(`SELECT-feil mot "visitors": ${test.error.message}`);
-  
-        // 4) Vis app
+
         show('app', true);
-  
-        async function fetchCounts() {
+
+        function fmt(d){
+          try { return new Date(d).toLocaleString(); } catch { return d; }
+        }
+
+        async function fetchCountsAndRecent() {
           try {
-            setStatus('Henter...');
-  
+            setStatus('Henter…');
+
+            // Telleverk
             const { count: uniqCount, error: uErr } = await client
-              .from('visitors')
-              .select('*', { count: 'exact', head: true });
-            if (uErr) throw new Error(`Henting "visitors": ${uErr.message}`);
-  
+              .from('visitors').select('*', { count:'exact', head:true });
+            if (uErr) throw new Error(uErr.message);
+
             const { data: evts, error: eErr } = await client
               .from('events')
-              .select('event_type');
-            if (eErr) throw new Error(`Henting "events": ${eErr.message}`);
-  
-            const counts = { phone:0, email:0, download:0 };
+              .select('event_type, created_at')
+              .order('created_at', { ascending: false });
+            if (eErr) throw new Error(eErr.message);
+
+            const counts = { phone:0, email:0, email_link:0, download:0 };
             (evts || []).forEach(e => { if (counts[e.event_type] !== undefined) counts[e.event_type]++; });
-  
-            document.getElementById('uniq').textContent     = uniqCount ?? 0;
-            document.getElementById('phone').textContent    = counts.phone;
-            document.getElementById('email').textContent    = counts.email;
-            document.getElementById('download').textContent = counts.download;
-  
-            setStatus('Sist oppdatert: ' + new Date().toLocaleTimeString());
+
+            document.getElementById('uniq').textContent        = uniqCount ?? 0;
+            document.getElementById('phone').textContent       = counts.phone;
+            document.getElementById('email').textContent       = counts.email;
+            document.getElementById('email_link').textContent  = counts.email_link;
+            document.getElementById('download').textContent    = counts.download;
+
+            // Siste 20 hendelser
+            const recentEl = document.getElementById('recentBody');
+            recentEl.innerHTML = '';
+            (evts || []).slice(0, 20).forEach(e => {
+              const tr = document.createElement('tr');
+              const tdTime = document.createElement('td');
+              const tdType = document.createElement('td');
+              tdTime.textContent = fmt(e.created_at);
+              tdType.textContent = e.event_type;
+              tr.appendChild(tdTime); tr.appendChild(tdType);
+              recentEl.appendChild(tr);
+            });
+            if (!evts || evts.length === 0) {
+              recentEl.innerHTML = '<tr><td colspan="2" class="muted">Ingen hendelser ennå</td></tr>';
+            }
+
+            const now = new Date().toLocaleTimeString();
+            setUpdated(now);
+            setStatus('OK');
           } catch (err) {
-            console.error(err);
-            setStatus('Feil ved henting');
-            showError(err);
+            console.error(err); setStatus('Feil ved henting'); showError(err);
           }
         }
-  
-        document.getElementById('refreshBtn').addEventListener('click', fetchCounts);
-        fetchCounts();
-        setInterval(fetchCounts, 30000);
-  
+
+        async function resetAll() {
+          const ok = confirm("Er du sikker på at du ønsker å fjerne all data om denne kampanjen?");
+          if (!ok) return;
+          try {
+            setStatus('Nullstiller…');
+            const delEvents   = await client.from('events').delete().neq('id', null);
+            if (delEvents.error) throw new Error('Sletting events: ' + delEvents.error.message);
+            const delVisitors = await client.from('visitors').delete().neq('id', null);
+            if (delVisitors.error) throw new Error('Sletting visitors: ' + delVisitors.error.message);
+            await fetchCountsAndRecent();
+            setStatus('Nullstilt ✓');
+          } catch (err) {
+            console.error(err); setStatus('Feil ved nullstilling'); showError(err);
+          }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', fetchCountsAndRecent);
+        document.getElementById('resetBtn').addEventListener('click', resetAll);
+
+        fetchCountsAndRecent();
+        setInterval(fetchCountsAndRecent, 10000);
+
       } catch (err) {
         console.error(err);
-        // Hvis token ikke er satt, vis forbidden; ellers error-panel
-        const qs  = new URLSearchParams(location.search);
-        const key = qs.get('key') || ADMIN_TOKEN;
-        if (!key || key === 'hemmelig') {
-          show('forbidden', true);
-        } else {
-          showError(err);
-        }
+        const params = new URLSearchParams(location.search);
+        const ADMIN_KEY = params.get("key") || FALLBACK_ADMIN_KEY;
+        if (!ADMIN_KEY || ADMIN_KEY === "__ADMIN_TOKEN__") show('forbidden', true);
+        else showError(err);
       }
     })();
   </script>
 </body>
 </html>
+
