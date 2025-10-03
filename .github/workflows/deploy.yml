@@ -27,23 +27,6 @@ jobs:
         with:
           version: latest
 
-      # Injiser PROJECT_REF og EXPECTED_ADMIN_KEY i HTML
-      - name: Inject placeholders
-        shell: bash
-        env:
-          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-          EXPECTED_ADMIN_KEY: ${{ secrets.EXPECTED_ADMIN_KEY }}
-        run: |
-          set -euo pipefail
-          esc(){ printf '%s' "$1" | sed -e 's/[\/&\\]/\\&/g'; }
-          REF_ESC=$(esc "$PROJECT_REF")
-          KEY_ESC=$(esc "$EXPECTED_ADMIN_KEY")
-          for f in index.html admin.html; do
-            [ -f "$f" ] || continue
-            sed -i "s/__PROJECT_REF__/$REF_ESC/g" "$f"
-            sed -i "s/__EXPECTED_ADMIN_KEY__/$KEY_ESC/g" "$f" || true
-          done
-
       # Deploy Edge Functions (log + admin)
       - name: Supabase functions deploy
         env:
