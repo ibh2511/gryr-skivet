@@ -48,11 +48,11 @@ jobs:
       - name: Supabase functions deploy
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }} # ikke brukt her, men greit å ha
         run: |
           supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
-          supabase functions deploy log
-          supabase functions deploy admin
+          supabase functions deploy log --no-verify-jwt
+          supabase functions deploy admin --no-verify-jwt
+
 
       # Publiser hele repoet som Pages
       - name: Upload Pages artifact
