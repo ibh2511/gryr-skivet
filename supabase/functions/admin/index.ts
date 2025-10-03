@@ -4,7 +4,6 @@ const url      = Deno.env.get("SB_URL")!;
 const key      = Deno.env.get("SB_SERVICE_ROLE_KEY")!;
 const adminKey = Deno.env.get("ADMIN_KEY")!;
 
-// Tillat bare din origin (tryggest). Evt. bruk "*" midlertidig.
 const ALLOW_ORIGIN = "https://ibh2511.github.io";
 
 const baseHdrs = {
@@ -21,20 +20,19 @@ const svcHdrs = {
   "Content-Type": "application/json",
 };
 
-serve(async (req) => {
-  // Preflight (CORS)
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: baseHdrs });
-  }
+// Robust tekst→JSON (tåler tom body)
+async function safeJson(resp: Response) {
+  const txt = await resp.text();
+  if (!txt) return [];
+  try { return JSON.parse(txt); } catch { return []; }
+}
 
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: baseHdrs });
-  }
+serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: baseHdrs });
+  if (req.method !== "POST")    return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers: baseHdrs });
 
   const got = req.headers.get("x-admin-key") || "";
-  if (!adminKey || got !== adminKey) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: baseHdrs });
-  }
+  if (!adminKey || got !== adminKey) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: baseHdrs });
 
   try {
     const { op } = await req.json().catch(() => ({}));
@@ -55,12 +53,23 @@ serve(async (req) => {
 
     if (op === "reset") {
       const now = new Date().toISOString();
-      const evDel = await fetch(`${url}/rest/v1/events?created_at=lt.${now}&select=event_type`, { method: "DELETE", headers: svcHdrs });
-      const viDel = await fetch(`${url}/rest/v1/visitors?first_seen=lt.${now}&select=id`,   { method: "DELETE", headers: svcHdrs });
-      if (!evDel.ok || !viDel.ok) return new Response(JSON.stringify({ error: "Delete failed" }), { status: 500, headers: baseHdrs });
 
-      const deletedEvents   = ((await evDel.json()) as any[])?.length ?? 0;
-      const deletedVisitors = ((await viDel.json()) as any[])?.length ?? 0;
+      // Viktig: Prefer: return=representation for å få JSON tilbake
+      const delHdrs = { ...svcHdrs, Prefer: "return=representation" };
+
+      const evDel = await fetch(`${url}/rest/v1/events?created_at=lt.${now}&select=event_type`, { method: "DELETE", headers: delHdrs });
+      const viDel = await fetch(`${url}/rest/v1/visitors?first_seen=lt.${now}&select=id`,       { method: "DELETE", headers: delHdrs });
+
+      if (!evDel.ok || !viDel.ok) {
+        return new Response(JSON.stringify({ error: "Delete failed" }), { status: 500, headers: baseHdrs });
+      }
+
+      const evRows = await safeJson(evDel);   // tåler tomt svar
+      const viRows = await safeJson(viDel);
+
+      const deletedEvents   = Array.isArray(evRows) ? evRows.length : 0;
+      const deletedVisitors = Array.isArray(viRows) ? viRows.length : 0;
+
       return new Response(JSON.stringify({ ok: true, deletedEvents, deletedVisitors }), { headers: baseHdrs });
     }
 
