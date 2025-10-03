@@ -5,21 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Få Gryr skivet ost tilbake – kontakt & del</title>
 
-  <!-- Primær/OG/Twitter metadata (oppdater URL/IMAGE til din side) -->
   <meta name="description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
-  <link rel="canonical" href="https://<brukernavn>.github.io/<repo>/" />
   <meta name="theme-color" content="#01A0C6" />
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Få Gryr skivet ost tilbake – kontakt & del">
-  <meta property="og:description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
-  <meta property="og:image" content="https://<brukernavn>.github.io/<repo>/social-share.jpg">
-  <meta property="og:url" content="https://<brukernavn>.github.io/<repo>/" />
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Få Gryr skivet ost tilbake – kontakt & del">
-  <meta name="twitter:description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
-  <meta name="twitter:image" content="https://<brukernavn>.github.io/<repo>/social-share.jpg">
 
-  <!-- Nunito Sans -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -28,7 +16,7 @@
       --accent:#F4D31F;
       --btn-bg: rgba(255,255,255,.08);
       --btn-bg-hover: rgba(255,255,255,.14);
-      --btn-border: rgba(255,255,255,.35);          /* <- knappeborderfarge */
+      --btn-border: rgba(255,255,255,.35);       /* <- knappeborderfarge */
       --btn-border-strong: rgba(255,255,255,.85);
     }
     * { box-sizing: border-box; }
@@ -39,115 +27,49 @@
       padding: clamp(12px, 4vw, 28px);
     }
     .wrap{ max-width: 760px; margin: 0 auto; }
+    h1{ text-align:center; font-weight:800; font-size: clamp(26px, 6vw, 40px); margin: 0 0 12px; letter-spacing: .2px; }
 
-    h1{
-      text-align:center; font-weight:800;
-      font-size: clamp(26px, 6vw, 40px);
-      margin: 0 0 12px;
-      letter-spacing: .2px;
-    }
-
-    /* Lead – venstrestilt, god lesbarhet, line breaks */
     .lead{
-      text-align:left;
-      margin: 0 auto 18px;
-      max-width: 740px;
-      line-height: 1.6;
-      font-size: clamp(15px, 4.2vw, 18px);
-      font-weight: 700;
-      letter-spacing: .2px;
+      text-align:left; margin: 0 auto 18px; max-width: 740px;
+      line-height: 1.6; font-size: clamp(15px, 4.2vw, 18px); font-weight: 700; letter-spacing:.2px;
       text-wrap: balance;
     }
-    .lead .brand {
-      color: var(--accent);
-      font-weight: 800;
-      letter-spacing: .4px;
-    }
+    .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
 
-    /* Knappeseksjon */
-    .btns{
-      width: 100%; max-width: 740px; margin: 0 auto 18px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
+    .btns{ width:100%; max-width:740px; margin:0 auto 18px; display:flex; flex-direction:column; gap:10px; }
     a.button, button.button{
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      width: 100%;
-      padding: clamp(12px, 3.6vw, 16px);
-      border-radius: 12px;
-      border: 2px solid var(--btn-border);
-      background: var(--btn-bg);
-      color:#fff; text-decoration:none;
-      font-size: clamp(16px, 4.2vw, 18px);
-      font-weight: 800; line-height: 1.25;
-      cursor:pointer; text-align:center;
+      display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+      padding: clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
+      background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
+      font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
       transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
     }
-    a.button:hover, button.button:hover{ background: var(--btn-bg-hover); }
+    a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
     a.button:active, button.button:active{ transform: translateY(1px); }
+    .email-btn{ border-color: var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
+    @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
+    .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
 
-    /* Kun e-post-knappen: puls i #F4D31F */
-    .email-btn{
-      border-color: var(--btn-border-strong);
-      position: relative;
-      box-shadow: 0 0 0 0 rgba(244,211,31,0.55);
-      animation: borderPulse 1.8s ease-in-out infinite;
-    }
-    @keyframes borderPulse{
-      0%   { box-shadow: 0 0 0 0 rgba(244,211,31,0.55); }
-      60%  { box-shadow: 0 0 0 10px rgba(244,211,31,0.0); }
-      100% { box-shadow: 0 0 0 0 rgba(244,211,31,0.0); }
-    }
-
-    .btn-icon{ width: 1.2em; height: 1.2em; display:inline-block; }
-
-    .hint{
-      opacity:.95; font-size: clamp(12px, 3.8vw, 14px);
-      margin: 6px 2px 12px; text-align:center;
-    }
+    .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
     .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
 
-    /* Footer – bølge i toppen, hvit FB-delingslenke inne i bølgen */
-    footer{
-      position: relative;
-      width: 100%;
-      margin: 28px 0 0;
-      padding: 0;
-      background: transparent;
+    footer{ position:relative; width:100%; margin:28px 0 0; padding:0; background:transparent; }
+    .footer-wave{ position:relative; height:120px; }
+    .wave-svg{
+      position:absolute; top:0; left:50%; width:100vw; height:120px; transform:translateX(-50%);
+      display:block; pointer-events:none; /* lar lenken være klikkbar */
     }
-    .wave{
-      position: absolute;
-      top: -1px; left: 0;
-      width: 100%;
-      height: 120px;
-      display: block;
-      line-height: 0;
-      pointer-events: none;
+    .fb-share.on-wave{
+      position:absolute; top:28px; left:50%; transform:translateX(-50%);
+      display:inline-flex; align-items:center; gap:8px; color:#fff; font-weight:800; text-decoration: underline; opacity:.95; z-index:2;
     }
-    .footer-inner{
-      position: relative;
-      padding: 36px 16px 18px; /* løfter lenken slik at den "står i" bølgen */
-      display: flex;
-      justify-content: center;
-    }
-    .fb-share{
-      display: inline-flex; align-items: center; gap: 8px;
-      font-weight: 800; text-decoration: underline;
-      color: #fff;                      /* hvit link over bølgen */
-      opacity: .95;
-    }
-    .fb-share:hover{ opacity: 1; }
-    .fb-icon{ width: 1.1em; height: 1.1em; display:inline-block; }
+    .fb-share.on-wave:hover{ opacity:1; }
+    .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
 
-    /* Flytende status nederst til høyre */
-    .status{
-      position:fixed; right:12px; bottom:12px;
-      background:rgba(0,0,0,.25); padding:6px 10px;
-      border-radius:8px; font-size:12px; color:#fff;
-    }
+    /* Status-boble */
+    .status{ position:fixed; right:12px; bottom:12px; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff; }
 
-    @media (max-width: 360px){
-      .btn-icon,.fb-icon{ width: 1.1em; height: 1.1em; }
-    }
+    @media (max-width:360px){ .btn-icon,.fb-icon{ width:1.1em; height:1.1em; } }
   </style>
 </head>
 <body>
@@ -164,20 +86,13 @@
 
     <div class="btns">
       <a id="telLink" class="button" href="tel:+4751371606">
-        <!-- Telefon -->
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.9 2 2 0 0 1 4.11 2h2a2 2 0 0 1 2 1.72c.13.98.36 1.93.68 2.83a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.83.68A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.9 2 2 0 0 1 4.11 2h2a2 2 0 0 1 2 1.72c.13.98.36 1.93.68 2.83a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.83.68A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Ring: +47 51 37 16 06
       </a>
       <p class="hint">man - fre, 09 - 13</p>
 
       <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">
-        <!-- E-post -->
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/>
-          <path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/><path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Send e-post
       </a>
       <p class="hint inline-email">
@@ -186,30 +101,27 @@
       </p>
 
       <button id="qrBtn" class="button">
-        <!-- Nedlasting / QR -->
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Last ned skjermlåsbilde med QR-kode
       </button>
       <p class="hint">QR-koden peker til denne siden.</p>
     </div>
   </div>
 
-  <!-- Footer: bølge (øverst) i samme farge som knappeborderen + hvit FB-delingslenke -->
+  <!-- FULL-BREDDE BØLGE (fast frekvens), og lenke oppå bølgen -->
   <footer>
-    <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-      <path fill="var(--btn-border)"
-        d="
-        M0,60
-        Q45,90 90,60  T180,60  T270,60  T360,60  T450,60  T540,60
-        T630,60  T720,60  T810,60  T900,60  T990,60  T1080,60 T1170,60 T1260,60 T1350,60 T1440,60
-        L1440,120 L0,120 Z" />
-    </svg>
-    <div class="footer-inner">
-      <a id="fbShare" class="fb-share" href="#" rel="noopener">
+    <div class="footer-wave">
+      <svg class="wave-svg" viewBox="0 0 1440 120" aria-hidden="true">
+        <defs>
+          <!-- Fast bølgelengde ~180 px, skalerer ved å gjenta segmenter -->
+          <pattern id="wavePattern" x="0" y="0" width="180" height="120" patternUnits="userSpaceOnUse">
+            <path d="M0,60 Q45,90 90,60 T180,60 V120 H0 Z" fill="var(--btn-border)"/>
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="100%" height="120" fill="url(#wavePattern)"/>
+      </svg>
+
+      <a id="fbShare" class="fb-share on-wave" href="#" rel="noopener">
         <svg class="fb-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.35 2 1.86 6.48 1.86 12.07c0 4.93 3.6 9.02 8.31 9.9v-7H7.9v-2.9h2.27V9.41c0-2.24 1.33-3.48 3.37-3.48.98 0 2 .18 2 .18v2.2h-1.13c-1.12 0-1.47.69-1.47 1.39v1.67h2.5l-.4 2.9h-2.1v7C18.4 21.09 22 17 22 12.07z"/>
         </svg>
@@ -220,15 +132,11 @@
 
   <div class="status" id="status">kobler…</div>
 
-  <!-- Supabase UMD -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script>
-    // Supabase-kredentialer (injiseres av GitHub Actions)
-    const SUPABASE_URL  = "__SUPABASE_URL__";
-    const SUPABASE_ANON = "__SUPABASE_ANON__";
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    // ======== Edge Function (log) – konfig injiseres av Actions ========
+    const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co"; // injiser
+    const LOG_URL = FN_BASE + "/log";
 
-    // Status-boble
     const statusEl = document.getElementById('status');
     const setStatus = (m) => statusEl.textContent = m;
 
@@ -242,7 +150,7 @@
       localStorage.setItem(key, now); return true;
     }
 
-    // Visitor-Id
+    // Visitor-Id (lokal UUID)
     const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
@@ -252,68 +160,51 @@
       return id;
     }
 
-    // Sørg for visitor + første-besøk
-    async function ensureVisitor(){
-      const id = getVisitorId();
-      const { data, error } = await supabaseClient.from('visitors').select('id').eq('id', id).limit(1);
-      if (error) throw error;
-      if(!data || !data.length){
-        const { error: insErr } = await supabaseClient.from('visitors').insert({ id });
-        if (insErr) throw insErr;
-      }
-      return id;
+    async function logEvent(event_type){
+      if (!canLog(event_type)) return;
+      try{
+        const r = await fetch(LOG_URL, {
+          method: "POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify({ visitor_id: getVisitorId(), event_type })
+        });
+        if (!r.ok) throw new Error(await r.text());
+      }catch(err){ console.error(err); setStatus('feil: ' + (err?.message || 'ukjent')); }
     }
 
-    // Logg event
-    async function logEvent(type){
-      if (!canLog(type)) return;
-      const visitor_id = getVisitorId();
-      const { error } = await supabaseClient.from('events').insert({ visitor_id, event_type: type });
-      if (error) throw error;
-    }
-
-    // Boot
     (async () => {
       try {
         setStatus('kobler til…');
-        await ensureVisitor();
+        // Første besøk – logges én gang
         if (!localStorage.getItem("visited_once")) {
-          localStorage.setItem('rl_visit', Date.now());
-          await supabaseClient.from('events').insert({ visitor_id: getVisitorId(), event_type: 'visit' });
-          localStorage.setItem("visited_once", "1");
+          await logEvent('visit');
+          localStorage.setItem("visited_once","1");
         }
         setStatus('tilkoblet ✓');
       } catch (e) { console.error(e); setStatus('feil: ' + (e?.message || 'ukjent')); }
     })();
 
-    // Klikk-logging
-    document.getElementById('telLink').addEventListener('click', async () => { try { await logEvent('phone'); } catch(e){ setStatus('feil: '+e.message); } });
-    document.getElementById('mailLink').addEventListener('click', async () => { try { await logEvent('email'); } catch(e){ setStatus('feil: '+e.message); } });
-    document.getElementById('mailTextLink').addEventListener('click', async () => { try { await logEvent('email_link'); } catch(e){ setStatus('feil: '+e.message); } });
-
+    // Klikk
+    document.getElementById('telLink').addEventListener('click', () => logEvent('phone'));
+    document.getElementById('mailLink').addEventListener('click', () => logEvent('email'));
+    document.getElementById('mailTextLink').addEventListener('click', () => logEvent('email_link'));
     document.getElementById('qrBtn').addEventListener('click', async (e) => {
       e.preventDefault();
-      try {
-        await logEvent('download');
-        const a = document.createElement('a');
-        a.href = 'gryr-skivet-qr.png';
-        a.download = 'gryr-skivet-qr.png';
-        document.body.appendChild(a); a.click(); a.remove();
-      } catch (err) { console.error(err); setStatus('feil: ' + (err?.message || 'ukjent')); }
+      await logEvent('download');
+      const a = document.createElement('a');
+      a.href = 'gryr-skivet-qr.png';
+      a.download = 'gryr-skivet-qr.png';
+      document.body.appendChild(a); a.click(); a.remove();
     });
 
-    // Facebook share – logg bare hvis vinduet faktisk åpnes
+    // Facebook – logg kun hvis vinduet faktisk åpner
     document.getElementById('fbShare').addEventListener('click', async (e) => {
       e.preventDefault();
       const url = encodeURIComponent(location.href.split('#')[0]);
       const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-
       const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
-      if (!w || w.closed || typeof w.closed === 'undefined') {
-        setStatus('Tillat pop-ups for å dele på Facebook.');
-        return;
-      }
-      setTimeout(async () => { try { await logEvent('fb_share'); } catch(_) {} }, 120);
+      if (!w || w.closed || typeof w.closed === 'undefined') { setStatus('Tillat pop-ups for å dele på Facebook.'); return; }
+      setTimeout(() => logEvent('fb_share'), 120);
     });
   </script>
 </body>
