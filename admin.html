@@ -11,62 +11,59 @@
   <style>
     :root { --bg:#01A0C6; --fg:#fff; }
     * { box-sizing: border-box; }
-    html,body { height:100%; margin:0; }
-    body {
+    html,body{ height:100%; margin:0; }
+    body{
       background:var(--bg); color:var(--fg);
       font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      display:grid; place-items:center; padding: clamp(12px, 3vw, 28px);
+      display:block; padding: clamp(12px, 4vw, 28px);
     }
-    .wrap { width:min(1000px, 98vw); }
-    h1 { margin: 0 0 12px; font-weight:800; font-size: clamp(24px, 4.5vw, 36px); }
-    .controls {
+    .wrap{ max-width: 1000px; margin: 0 auto; }
+    h1{ margin:0 0 12px; font-weight:800; font-size: clamp(24px, 6vw, 36px); text-wrap: balance; }
+    .controls{
       margin: 12px 0 16px; display:flex; gap:10px; align-items:center; flex-wrap: wrap;
     }
-    button {
+    button{
       padding: 10px 14px; border-radius: 10px;
       border: 2px solid rgba(255,255,255,.35);
       background: rgba(255,255,255,.08);
-      color: #fff; cursor: pointer; font-weight:700;
+      color:#fff; cursor:pointer; font-weight:700;
       transition: background .15s ease, transform .06s ease;
     }
-    button:hover { background: rgba(255,255,255,.14); }
-    button:active { transform: translateY(1px); }
-    .danger { border-color: rgba(255,200,200,.85); }
+    button:hover{ background: rgba(255,255,255,.14); }
+    button:active{ transform: translateY(1px); }
+    .danger{ border-color: rgba(255,200,200,.85); }
+    .muted{ opacity:.9; font-size: clamp(12px, 4vw, 14px); }
 
-    .muted { opacity:.9; font-size: clamp(12px, 3vw, 14px); }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto; /* mobilvennlig */
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.18);
-      margin-bottom: 14px;
+    .table-wrap{
+      width:100%; overflow-x:auto;
+      border-radius:14px; margin-bottom:14px;
       background: rgba(255,255,255,.08);
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
     }
-    table {
-      width:100%; border-collapse: collapse; min-width: 520px;
-      font-size: clamp(14px, 3.2vw, 16px);
+    table{
+      width:100%; border-collapse: collapse; min-width:520px;
+      font-size: clamp(14px, 4.2vw, 16px);
     }
-    th, td {
-      padding: clamp(10px, 2.6vw, 14px) clamp(12px, 3vw, 16px);
+    th,td{
+      padding: clamp(10px, 3.6vw, 14px) clamp(12px, 4vw, 16px);
       border-bottom: 1px solid rgba(255,255,255,.25);
-      text-align:left;
-      white-space: nowrap;
+      text-align:left; white-space: nowrap;
     }
-    th { background: rgba(255,255,255,.12); font-weight:800; }
-    tr:last-child td { border-bottom: none; }
+    th{ background: rgba(255,255,255,.12); font-weight:800; }
+    tr:last-child td{ border-bottom:none; }
 
-    .panel { max-width:720px; text-align:center; }
-    .error-box { background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35);
+    .panel{ max-width:720px; margin: 0 auto; text-align:center; }
+    .error-box{ background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35);
       padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
-    code { background:rgba(0,0,0,.25); padding:0 6px; border-radius:6px; }
   </style>
 </head>
 <body>
   <div class="wrap" id="app" hidden>
     <h1>Statistikk</h1>
+
     <div class="controls">
       <button id="refreshBtn">Oppdater nå</button>
+      <button id="exportBtn">Eksporter CSV</button>
       <button id="resetBtn" class="danger">Nullstill data</button>
       <span class="muted" id="status">—</span>
     </div>
@@ -80,16 +77,6 @@
           <tr><td>E-post knapp</td><td id="email">…</td></tr>
           <tr><td>E-post lenke</td><td id="email_link">…</td></tr>
           <tr><td>Nedlastinger</td><td id="download">…</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h2 style="margin: 10px 0;">Siste hendelser</h2>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Tid</th><th>Hendelse</th></tr></thead>
-        <tbody id="recentBody">
-          <tr><td colspan="2" class="muted">Laster…</td></tr>
         </tbody>
       </table>
     </div>
@@ -123,7 +110,7 @@
         (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
     }
 
-    // Supabase UMD loader (robust)
+    // Supabase UMD loader
     function loadScript(src){
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -158,51 +145,62 @@
 
         show('app', true);
 
-        function fmt(d){ try { return new Date(d).toLocaleString(); } catch { return d; } }
+        async function fetchCounts() {
+          setStatus('Henter…');
+          const { count: uniqCount, error: uErr } = await client
+            .from('visitors').select('*', { count:'exact', head:true });
+          if (uErr) throw new Error(uErr.message);
 
-        async function fetchCountsAndRecent() {
-          try {
-            setStatus('Henter…');
+          const { data: evts, error: eErr } = await client
+            .from('events').select('event_type,created_at,visitor_id').order('created_at', { ascending:false });
+          if (eErr) throw new Error(eErr.message);
 
-            const { count: uniqCount, error: uErr } = await client
-              .from('visitors').select('*', { count:'exact', head:true });
-            if (uErr) throw new Error(uErr.message);
+          const counts = { phone:0, email:0, email_link:0, download:0 };
+          (evts || []).forEach(e => { if (counts[e.event_type] !== undefined) counts[e.event_type]++; });
 
-            const { data: evts, error: eErr } = await client
-              .from('events')
-              .select('id, event_type, created_at')
-              .order('created_at', { ascending: false });
-            if (eErr) throw new Error(eErr.message);
+          document.getElementById('uniq').textContent       = uniqCount ?? 0;
+          document.getElementById('phone').textContent      = counts.phone;
+          document.getElementById('email').textContent      = counts.email;
+          document.getElementById('email_link').textContent = counts.email_link;
+          document.getElementById('download').textContent   = counts.download;
 
-            const counts = { phone:0, email:0, email_link:0, download:0 };
-            (evts || []).forEach(e => { if (counts[e.event_type] !== undefined) counts[e.event_type]++; });
-
-            document.getElementById('uniq').textContent        = uniqCount ?? 0;
-            document.getElementById('phone').textContent       = counts.phone;
-            document.getElementById('email').textContent       = counts.email;
-            document.getElementById('email_link').textContent  = counts.email_link;
-            document.getElementById('download').textContent    = counts.download;
-
-            const recentEl = document.getElementById('recentBody');
-            recentEl.innerHTML = '';
-            (evts || []).slice(0, 20).forEach(e => {
-              const tr = document.createElement('tr');
-              tr.innerHTML = `<td>${fmt(e.created_at)}</td><td>${e.event_type}</td>`;
-              recentEl.appendChild(tr);
-            });
-            if (!evts || evts.length === 0) {
-              recentEl.innerHTML = '<tr><td colspan="2" class="muted">Ingen hendelser ennå</td></tr>';
-            }
-
-            setUpdated(new Date().toLocaleTimeString());
-            setStatus('OK');
-          } catch (err) { console.error(err); setStatus('Feil ved henting'); showError(err); }
+          setUpdated(new Date().toLocaleTimeString());
+          setStatus('OK');
         }
 
-        async function resetAll() {
+        async function exportCSV(){
+          try{
+            setStatus('Lager CSV…');
+            const { data, error } = await client
+              .from('events')
+              .select('created_at,event_type,visitor_id')
+              .order('created_at', { ascending: true });
+            if (error) throw new Error(error.message);
+
+            const rows = [['created_at','event_type','visitor_id']];
+            (data || []).forEach(r => rows.push([r.created_at, r.event_type, r.visitor_id || '']));
+            const csv = rows.map(r =>
+              r.map(v => {
+                const s = String(v ?? '');
+                return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+              }).join(',')
+            ).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `events_export_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+            setStatus('CSV eksportert ✓');
+          }catch(err){ console.error(err); setStatus('Feil ved eksport'); showError(err); }
+        }
+
+        async function resetAll(){
           const ok = confirm("Er du sikker på at du ønsker å fjerne all data om denne kampanjen?");
           if (!ok) return;
-          try {
+          try{
             setStatus('Nullstiller…');
             const nowIso = new Date().toISOString();
 
@@ -211,7 +209,7 @@
               .from('events')
               .delete()
               .lt('created_at', nowIso)
-              .select('id');
+              .select('event_type'); // hent noe for å telle
             if (evErr) throw new Error('Sletting events: ' + evErr.message);
 
             // Slett visitors
@@ -223,22 +221,21 @@
             if (viErr) throw new Error('Sletting visitors: ' + viErr.message);
 
             const total = (evDel?.length || 0) + (viDel?.length || 0);
-            if (total === 0) {
-              setStatus('Ingen data å slette (allerede tomt)');
+            if (total === 0){
+              setStatus('Ingen data for denne kampanjen');
             } else {
               setStatus(`Nullstilt ✓ (slettet ${total})`);
             }
-            await fetchCountsAndRecent();
-          } catch (err) {
-            console.error(err); setStatus('Feil ved nullstilling'); showError(err);
-          }
+            await fetchCounts();
+          }catch(err){ console.error(err); setStatus('Feil ved nullstilling'); showError(err); }
         }
 
-        document.getElementById('refreshBtn').addEventListener('click', fetchCountsAndRecent);
+        document.getElementById('refreshBtn').addEventListener('click', fetchCounts);
+        document.getElementById('exportBtn').addEventListener('click', exportCSV);
         document.getElementById('resetBtn').addEventListener('click', resetAll);
 
-        fetchCountsAndRecent();
-        setInterval(fetchCountsAndRecent, 10000);
+        fetchCounts();
+        setInterval(fetchCounts, 10000);
 
       } catch (err) {
         console.error(err);
