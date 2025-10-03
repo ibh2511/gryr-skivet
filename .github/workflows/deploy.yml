@@ -21,25 +21,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # (Debug) Se at filene er der vi forventer
+      # (Debug) list repo tree
       - name: List files
         run: |
           pwd
           ls -la
-          echo "== supabase/functions =="
-          ls -la supabase/functions || true
-          echo "== admin =="
-          ls -la supabase/functions/admin || true
-          echo "== log =="
-          ls -la supabase/functions/log || true
+          echo "== find html files =="
+          find . -type f -name "*.html" -print
 
-      # Installer Supabase CLI
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      # ⬇️ Injiser __PROJECT_REF__ i HTML før vi bygger/publiserer
+      # Inject __PROJECT_REF__ in ALL .html files (recursively)
       - name: Inject placeholders
         shell: bash
         env:
@@ -53,33 +48,32 @@ jobs:
           esc(){ printf '%s' "$1" | sed -e 's/[\/&\\]/\\&/g'; }
           REF_ESC="$(esc "$PROJECT_REF")"
 
-          for f in index.html admin.html; do
-            if [ -f "$f" ]; then
-              sed -i "s/__PROJECT_REF__/$REF_ESC/g" "$f"
-              sed -i "s/__project_ref__/$REF_ESC/g" "$f" || true
-            else
-              echo "File not found: $f"
-            fi
+          mapfile -t files < <(find . -type f -name "*.html")
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No HTML files found"; exit 1
+          fi
+
+          # Replace in-place across all html files
+          for f in "${files[@]}"; do
+            sed -i "s/__PROJECT_REF__/$REF_ESC/g" "$f"
+            sed -i "s/__project_ref__/$REF_ESC/g" "$f" || true
           done
 
-      # ✅ Verifiser at plassholderne er borte (feil workflow hvis ikke)
+      # Verify & show exactly where placeholders remain (if any)
       - name: Verify replacements
         shell: bash
         run: |
           set -euo pipefail
-          echo "=== index.html FN_BASE line ==="
-          (grep -n "FN_BASE" index.html || true) && (sed -n '/FN_BASE/p' index.html || true)
-          echo "=== admin.html FN_BASE line ==="
-          (grep -n "FN_BASE" admin.html || true) && (sed -n '/FN_BASE/p' admin.html || true)
-
-          REMAIN=$(grep -R "__PROJECT_REF__" -n || true)
+          REMAIN=$(grep -Rn "__PROJECT_REF__\|__project_ref__" --include="*.html" . || true)
           if [ -n "$REMAIN" ]; then
-            echo "::error ::Placeholder __PROJECT_REF__ still present in files:"
+            echo "::error ::Placeholder still present in files/lines below:"
             echo "$REMAIN"
             exit 1
           fi
 
-      # Link prosjekt + deploy Edge Functions (tving av JWT-verifisering)
+          echo "== FN_BASE lines (sanity) =="
+          grep -Rn "FN_BASE" --include="*.html" . || true
+
       - name: Supabase functions deploy
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -89,7 +83,6 @@ jobs:
           supabase functions deploy log --no-verify-jwt
           supabase functions deploy admin --no-verify-jwt
 
-      # (Rask røyk-test i loggen – valgfritt men nyttig)
       - name: Smoke test admin function (no auth)
         run: |
           set -euo pipefail
@@ -104,7 +97,6 @@ jobs:
             --data '{"op":"ping"}' \
             "https://${{ secrets.SUPABASE_PROJECT_REF }}.functions.supabase.co/admin" || true
 
-      # Publiser til GitHub Pages
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
