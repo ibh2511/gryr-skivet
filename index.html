@@ -25,6 +25,7 @@
   <style>
     :root{
       --bg:#01A0C6; --fg:#fff;
+      --accent:#F4D31F;
       --btn-bg: rgba(255,255,255,.08);
       --btn-bg-hover: rgba(255,255,255,.14);
       --btn-border: rgba(255,255,255,.35);
@@ -39,29 +40,34 @@
       padding: clamp(12px, 4vw, 28px);
     }
     .wrap{ max-width: 760px; margin: 0 auto; }
+
     h1{
       text-align:center; font-weight:800;
       font-size: clamp(26px, 6vw, 40px);
       margin: 0 0 12px;
+      letter-spacing: .2px;
     }
 
-    /* Salgstekst (uten kort) */
+    /* Lead – venstrestilt, god lesbarhet, line breaks */
     .lead{
-      text-align:center;
+      text-align:left;
       margin: 0 auto 18px;
       max-width: 740px;
-      line-height: 1.5;
+      line-height: 1.6;
       font-size: clamp(15px, 4.2vw, 18px);
       font-weight: 700;
       letter-spacing: .2px;
       text-wrap: balance;
     }
-    .lead strong{ font-weight: 800; }
-    .lead .em { font-weight: 800; }
+    .lead .brand {
+      color: var(--accent);
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
 
-    /* Like, sentrerte knapper */
+    /* Knappeseksjon */
     .btns{
-      width: 100%; max-width: 740px; margin: 0 auto;
+      width: 100%; max-width: 740px; margin: 0 auto 18px;
       display: flex; flex-direction: column; gap: 10px;
     }
     a.button, button.button{
@@ -80,16 +86,17 @@
     a.button:hover, button.button:hover{ background: var(--btn-bg-hover); }
     a.button:active, button.button:active{ transform: translateY(1px); }
 
-    /* Kun e-post-knappen: tydeligere kant + border/shine-animasjon */
+    /* Kun e-post-knappen: puls i #F4D31F */
     .email-btn{
       border-color: var(--btn-border-strong);
       position: relative;
+      box-shadow: 0 0 0 0 rgba(244,211,31,0.55);
       animation: borderPulse 1.8s ease-in-out infinite;
     }
     @keyframes borderPulse{
-      0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
-      60%  { box-shadow: 0 0 0 8px rgba(255,255,255,0.0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.0); }
+      0%   { box-shadow: 0 0 0 0 rgba(244,211,31,0.55); }
+      60%  { box-shadow: 0 0 0 10px rgba(244,211,31,0.0); }
+      100% { box-shadow: 0 0 0 0 rgba(244,211,31,0.0); }
     }
 
     .btn-icon{ width: 1.2em; height: 1.2em; display:inline-block; }
@@ -100,20 +107,37 @@
     }
     .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
 
-    /* Facebook: sekundær stil – mindre iøynefallende */
-    .button--secondary{
-      background: transparent;
-      border: 1px dashed rgba(255,255,255,.35);
-      font-weight: 700;
-      opacity: .85;
+    /* Facebook deling: subtil lenke, ikke stor knapp */
+    .share-row{
+      margin-top: 8px;
+      display: flex; justify-content: center;
     }
-    .button--secondary:hover{ opacity: 1; background: rgba(255,255,255,.08); border-style: solid; }
+    .fb-share{
+      display: inline-flex; align-items: center; gap: 8px;
+      font-weight: 700; text-decoration: underline;
+      opacity: .8;
+    }
+    .fb-share:hover{ opacity: 1; }
+    .fb-icon{ width: 1.1em; height: 1.1em; display:inline-block; }
 
+    /* Footer med bølge-topp */
+    footer{
+      margin-top: 28px;
+      text-align: center;
+      font-size: clamp(12px, 3.6vw, 14px);
+      opacity: .95;
+    }
+    .wave{
+      display:block; width:100%; height:auto; margin: 0 auto 10px;
+    }
+
+    /* Flytende status nederst til høyre */
     .status{
       position:fixed; right:12px; bottom:12px;
       background:rgba(0,0,0,.25); padding:6px 10px;
       border-radius:8px; font-size:12px;
     }
+
     @media (max-width: 360px){
       .btn-icon{ width: 1.1em; height: 1.1em; }
     }
@@ -124,14 +148,16 @@
     <h1>Kontakt</h1>
 
     <p class="lead">
-      😞 Det er kjedelig når veganske produkter forsvinner fra markedet. Nok et produkt er borte fra butikkhyllene.
-      <br><span class="em">Hjelp oss å få <strong>Gryr skivet ost</strong> tilbake!</span> 💪
-      <br>Ring ☎️, send e-post 📧 og last ned QR-kode til denne siden som låseskjerm 🔒 – be alle du kjenner om å gjøre det samme.
+      😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
+      Nok et produkt er borte fra butikkhyllene.<br><br>
+      <span class="brand">GRYR® SKIVET</span> må tilbake! 💪<br>
+      Ring ☎️, send e-post 📧 og last ned QR-kode til denne siden som låseskjerm 🔒 – be alle du kjenner om å gjøre det samme.<br>
       Del også linken til denne siden på Facebook 👍.
     </p>
 
     <div class="btns">
       <a id="telLink" class="button" href="tel:+4751371606">
+        <!-- Telefon -->
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.9 2 2 0 0 1 4.11 2h2a2 2 0 0 1 2 1.72c.13.98.36 1.93.68 2.83a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.83.68A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -140,6 +166,7 @@
       <p class="hint">man - fre, 09 - 13</p>
 
       <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">
+        <!-- E-post -->
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/>
           <path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -152,6 +179,7 @@
       </p>
 
       <button id="qrBtn" class="button">
+        <!-- Nedlasting / QR -->
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -160,19 +188,30 @@
         Last ned skjermlåsbilde med QR-kode
       </button>
       <p class="hint">QR-koden peker til denne siden.</p>
+    </div>
 
-      <!-- Facebook: sekundær knapp (mindre synlig) -->
-      <a id="fbShare" class="button button--secondary" href="#" rel="noopener">
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <!-- Subtil Facebook-lenke (ikke stor knapp) -->
+    <div class="share-row">
+      <a id="fbShare" class="fb-share" href="#" rel="noopener">
+        <svg class="fb-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.35 2 1.86 6.48 1.86 12.07c0 4.93 3.6 9.02 8.31 9.9v-7H7.9v-2.9h2.27V9.41c0-2.24 1.33-3.48 3.37-3.48.98 0 2 .18 2 .18v2.2h-1.13c-1.12 0-1.47.69-1.47 1.39v1.67h2.5l-.4 2.9h-2.1v7C18.4 21.09 22 17 22 12.07z"/>
         </svg>
         Del på Facebook
       </a>
     </div>
+
+    <footer>
+      <!-- Bølge-topp (enkel SVG) -->
+      <svg class="wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
+        <path fill="rgba(255,255,255,.2)" d="M0,64L60,58.7C120,53,240,43,360,53.3C480,64,600,96,720,101.3C840,107,960,85,1080,64C1200,43,1320,21,1380,10.7L1440,0L1440,100L1380,100C1320,100,1200,100,1080,100C960,100,840,100,720,100C600,100,480,100,360,100C240,100,120,100,60,100L0,100Z"></path>
+      </svg>
+      <div>© Kampanjen for GRYR® SKIVET</div>
+    </footer>
   </div>
 
   <div class="status" id="status">kobler…</div>
 
+  <!-- jQuery (frivillig) + Supabase UMD -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script>
@@ -232,11 +271,11 @@
     })();
 
     // Klikk-logging
-    $('#telLink').on('click',  async () => { try { await logEvent('phone'); } catch(e){ setStatus('feil: '+e.message); } });
-    $('#mailLink').on('click', async () => { try { await logEvent('email'); } catch(e){ setStatus('feil: '+e.message); } });
-    $('#mailTextLink').on('click', async () => { try { await logEvent('email_link'); } catch(e){ setStatus('feil: '+e.message); } });
+    document.getElementById('telLink').addEventListener('click', async () => { try { await logEvent('phone'); } catch(e){ setStatus('feil: '+e.message); } });
+    document.getElementById('mailLink').addEventListener('click', async () => { try { await logEvent('email'); } catch(e){ setStatus('feil: '+e.message); } });
+    document.getElementById('mailTextLink').addEventListener('click', async () => { try { await logEvent('email_link'); } catch(e){ setStatus('feil: '+e.message); } });
 
-    $('#qrBtn').on('click',   async (e) => {
+    document.getElementById('qrBtn').addEventListener('click', async (e) => {
       e.preventDefault();
       try {
         await logEvent('download');
@@ -247,31 +286,20 @@
       } catch (err) { console.error(err); setStatus('feil: ' + (err?.message || 'ukjent')); }
     });
 
-    // Facebook share – mindre synlig knapp, men vi logger 'fb_share' først
+    // Facebook share – logg bare hvis vinduet faktisk åpnes
     document.getElementById('fbShare').addEventListener('click', async (e) => {
       e.preventDefault();
       const url = encodeURIComponent(location.href.split('#')[0]);
       const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-  
-      // Forsøk å åpne vindu først (pop-up kan blokkeres)
+
       const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
-  
       if (!w || w.closed || typeof w.closed === 'undefined') {
-        // Pop-up ble blokkert – ikke logg. Vis vennlig beskjed.
+        // Pop-up blokkert – ikke logg
         setStatus('Tillat pop-ups for å dele på Facebook.');
         return;
       }
-  
-      // Vinduet ble åpnet – logg fb_share.
-      try { await logEvent('fb_share'); } catch (_) {}
-  
-      // Valgfritt: liten polling for å merke at vindu ble stengt (kun UI, ingen ekstra logging)
-      const poll = setInterval(() => {
-        if (w.closed) {
-          clearInterval(poll);
-          setStatus('Takk for at du delte! 💙');
-        }
-      }, 800);
+      // Vindu ser ut til å ha åpnet – liten delay og logg
+      setTimeout(async () => { try { await logEvent('fb_share'); } catch(_) {} }, 120);
     });
   </script>
 </body>
