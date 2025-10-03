@@ -5,19 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Få Gryr skivet ost tilbake – kontakt & del</title>
 
-  <!-- Primær metadata -->
+  <!-- Primær/OG/Twitter metadata (oppdater URL/IMAGE til din side) -->
   <meta name="description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
   <link rel="canonical" href="https://<brukernavn>.github.io/<repo>/" />
   <meta name="theme-color" content="#01A0C6" />
-
-  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Få Gryr skivet ost tilbake – kontakt & del">
   <meta property="og:description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
   <meta property="og:image" content="https://<brukernavn>.github.io/<repo>/social-share.jpg">
   <meta property="og:url" content="https://<brukernavn>.github.io/<repo>/" />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Få Gryr skivet ost tilbake – kontakt & del">
   <meta name="twitter:description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
@@ -32,7 +28,7 @@
       --btn-bg: rgba(255,255,255,.08);
       --btn-bg-hover: rgba(255,255,255,.14);
       --btn-border: rgba(255,255,255,.35);
-      --btn-border-strong: rgba(255,255,255,.85); /* e-post-knappen */
+      --btn-border-strong: rgba(255,255,255,.85);
     }
     * { box-sizing: border-box; }
     html,body{ height:100%; margin:0; }
@@ -42,18 +38,14 @@
       display:block;
       padding: clamp(12px, 4vw, 28px);
     }
-    .wrap{
-      max-width: 760px;
-      margin: 0 auto; /* midtstilt, lik marg på begge sider */
-    }
+    .wrap{ max-width: 760px; margin: 0 auto; }
     h1{
-      text-align:center;
-      font-weight:800;
+      text-align:center; font-weight:800;
       font-size: clamp(26px, 6vw, 40px);
       margin: 0 0 12px;
     }
 
-    /* Salgstekst på bakgrunn (uten kort) */
+    /* Salgstekst (uten kort) */
     .lead{
       text-align:center;
       margin: 0 auto 18px;
@@ -69,12 +61,8 @@
 
     /* Like, sentrerte knapper */
     .btns{
-      width: 100%;
-      max-width: 740px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      width: 100%; max-width: 740px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 10px;
     }
     a.button, button.button{
       display: flex; align-items: center; justify-content: center; gap: 10px;
@@ -86,13 +74,23 @@
       color:#fff; text-decoration:none;
       font-size: clamp(16px, 4.2vw, 18px);
       font-weight: 800; line-height: 1.25;
-      cursor:pointer;
-      transition: background .15s ease, border-color .15s ease, transform .06s ease;
-      text-align:center;
+      cursor:pointer; text-align:center;
+      transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
     }
     a.button:hover, button.button:hover{ background: var(--btn-bg-hover); }
     a.button:active, button.button:active{ transform: translateY(1px); }
-    .email-btn{ border-color: var(--btn-border-strong); }
+
+    /* Kun e-post-knappen: tydeligere kant + border/shine-animasjon */
+    .email-btn{
+      border-color: var(--btn-border-strong);
+      position: relative;
+      animation: borderPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes borderPulse{
+      0%   { box-shadow: 0 0 0 0 rgba(255,255,255,0.55); }
+      60%  { box-shadow: 0 0 0 8px rgba(255,255,255,0.0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.0); }
+    }
 
     .btn-icon{ width: 1.2em; height: 1.2em; display:inline-block; }
 
@@ -102,13 +100,20 @@
     }
     .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
 
+    /* Facebook: sekundær stil – mindre iøynefallende */
+    .button--secondary{
+      background: transparent;
+      border: 1px dashed rgba(255,255,255,.35);
+      font-weight: 700;
+      opacity: .85;
+    }
+    .button--secondary:hover{ opacity: 1; background: rgba(255,255,255,.08); border-style: solid; }
+
     .status{
       position:fixed; right:12px; bottom:12px;
       background:rgba(0,0,0,.25); padding:6px 10px;
       border-radius:8px; font-size:12px;
     }
-
-    /* Liten justering for veldig smale skjermer */
     @media (max-width: 360px){
       .btn-icon{ width: 1.1em; height: 1.1em; }
     }
@@ -127,7 +132,6 @@
 
     <div class="btns">
       <a id="telLink" class="button" href="tel:+4751371606">
-        <!-- Telefon -->
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.9 2 2 0 0 1 4.11 2h2a2 2 0 0 1 2 1.72c.13.98.36 1.93.68 2.83a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.83.68A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -136,7 +140,6 @@
       <p class="hint">man - fre, 09 - 13</p>
 
       <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">
-        <!-- E-post -->
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/>
           <path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -149,7 +152,6 @@
       </p>
 
       <button id="qrBtn" class="button">
-        <!-- Nedlasting / QR -->
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -159,9 +161,8 @@
       </button>
       <p class="hint">QR-koden peker til denne siden.</p>
 
-      <!-- Facebook deleknapp -->
-      <a id="fbShare" class="button" href="#" rel="noopener">
-        <!-- Facebook-ikon (enkelt) -->
+      <!-- Facebook: sekundær knapp (mindre synlig) -->
+      <a id="fbShare" class="button button--secondary" href="#" rel="noopener">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.35 2 1.86 6.48 1.86 12.07c0 4.93 3.6 9.02 8.31 9.9v-7H7.9v-2.9h2.27V9.41c0-2.24 1.33-3.48 3.37-3.48.98 0 2 .18 2 .18v2.2h-1.13c-1.12 0-1.47.69-1.47 1.39v1.67h2.5l-.4 2.9h-2.1v7C18.4 21.09 22 17 22 12.07z"/>
         </svg>
@@ -182,19 +183,14 @@
     const statusEl = document.getElementById('status');
     const setStatus = (m) => statusEl.textContent = m;
 
-    // Rate-limit (per event-type)
+    // Rate-limit (per event)
     const COOLDOWN_MS = 1500;
     function canLog(type){
       const key = 'rl_' + type;
       const now = Date.now();
       const last = +(localStorage.getItem(key) || 0);
-      if (now - last < COOLDOWN_MS) {
-        const left = Math.ceil((COOLDOWN_MS - (now - last))/1000);
-        setStatus(`vent ${left}s…`);
-        return false;
-      }
-      localStorage.setItem(key, now);
-      return true;
+      if (now - last < COOLDOWN_MS) { setStatus(`vent ${Math.ceil((COOLDOWN_MS-(now-last))/1000)}s…`); return false; }
+      localStorage.setItem(key, now); return true;
     }
 
     const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
@@ -251,9 +247,10 @@
       } catch (err) { console.error(err); setStatus('feil: ' + (err?.message || 'ukjent')); }
     });
 
-    // Facebook share – åpner i nytt vindu/tab
-    document.getElementById('fbShare').addEventListener('click', (e) => {
+    // Facebook share – mindre synlig knapp, men vi logger 'fb_share' først
+    document.getElementById('fbShare').addEventListener('click', async (e) => {
       e.preventDefault();
+      try { await logEvent('fb_share'); } catch(_) {}
       const url = encodeURIComponent(location.href.split('#')[0]);
       const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
       window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
