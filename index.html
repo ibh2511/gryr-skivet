@@ -4,32 +4,95 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kontakt</title>
+
+  <!-- Nunito Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
-    :root { --bg:#01A0C6; --fg:#fff; }
-    html,body { height:100%; margin:0; }
-    body { background:var(--bg); color:var(--fg); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; display:grid; place-items:center; }
-    .wrap { width:min(560px,92vw); text-align:center; }
-    a.button, button.button {
-      display:block; width:100%; padding:14px 16px; margin:10px 0;
-      border-radius:10px; border:2px solid rgba(255,255,255,.35);
-      background:rgba(255,255,255,.08); color:#fff; text-decoration:none; font-size:18px; backdrop-filter:blur(4px);
-      cursor:pointer;
+    :root {
+      --bg:#01A0C6; --fg:#fff;
+      --btn-bg: rgba(255,255,255,.08);
+      --btn-bg-hover: rgba(255,255,255,.14);
+      --btn-border: rgba(255,255,255,.35);
+      --btn-border-strong: rgba(255,255,255,.8); /* e-post-knappen */
     }
-    a.button:hover, button.button:hover { background:rgba(255,255,255,.14); }
-    .hint { opacity:.9; font-size:14px; margin-top:8px; }
-    .status { position:fixed; inset:auto 12px 12px auto; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; }
+    html,body { height:100%; margin:0; }
+    body {
+      background:var(--bg); color:var(--fg);
+      font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      display:grid; place-items:center; padding: clamp(12px, 2vw, 24px);
+    }
+    .wrap {
+      width:min(680px, 96vw);
+      text-align:center;
+    }
+    h1 {
+      font-weight:800;
+      font-size: clamp(26px, 3.6vw, 40px);
+      margin: 0 0 8px;
+    }
+    .lead {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 14px;
+      padding: clamp(12px, 2.2vw, 18px);
+      text-align: left;
+    }
+    .lead h2 {
+      margin: 0 0 6px;
+      font-size: clamp(18px, 2.4vw, 22px);
+      font-weight: 700;
+    }
+    .lead p {
+      margin: 0;
+      line-height: 1.5;
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+    a.button, button.button {
+      display:block; width:100%;
+      padding: clamp(12px, 2.2vw, 14px) clamp(14px, 2.4vw, 16px);
+      margin: 10px 0;
+      border-radius: 12px;
+      border: 2px solid var(--btn-border);
+      background: var(--btn-bg);
+      color:#fff; text-decoration:none;
+      font-size: clamp(16px, 2.6vw, 18px);
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+      cursor:pointer;
+      transition: background .15s ease, border-color .15s ease, transform .06s ease;
+    }
+    a.button:hover, button.button:hover { background: var(--btn-bg-hover); }
+    a.button:active, button.button:active { transform: translateY(1px); }
+
+    /* E-post-knappen mer tydelig kant */
+    .email-btn { border-color: var(--btn-border-strong); }
+
+    .hint { opacity:.9; font-size: clamp(12px, 2.2vw, 14px); margin-top:6px; }
+    .status {
+      position:fixed; right:12px; bottom:12px;
+      background:rgba(0,0,0,.25); padding:6px 10px;
+      border-radius:8px; font-size:12px;
+    }
+    .inline-email a { color:#fff; font-weight:700; text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Kontakt</h1>
 
-    <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
-    <p class="hint">man - fre, kl 09 - 13</p>
+    <!-- Ny intro-seksjon -->
+    <div class="lead" style="margin-bottom:14px;">
+      <h2>Slik kontakter du oss</h2>
+      <p>Velg om du vil ringe i åpningstiden, sende en ferdig utfylt e-post via knappen, eller skrive fra ditt eget e-postprogram via lenken under.</p>
+    </div>
 
-    <a id="mailLink" class="button" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
-    <p class="hint">
-      Trykk på knappen for ferdig e-post, eller send din egen til
+    <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
+    <p class="hint">man–fre, 09–13</p>
+
+    <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
+    <p class="hint inline-email">
+      Eller send fra ditt eget program til
       <a id="mailTextLink" href="mailto:forbruker@tine.no">forbruker@tine.no</a>
     </p>
 
@@ -45,10 +108,11 @@
     const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
     const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
     const statusEl = document.getElementById('status');
     const setStatus = (m) => statusEl.textContent = m;
 
-    // === Rate-limit (per event-type) ===
+    // Rate-limit (per event-type)
     const COOLDOWN_MS = 1500;
     function canLog(type){
       const key = 'rl_' + type;
@@ -63,7 +127,7 @@
       return true;
     }
 
-    // === Visitor handling ===
+    // Visitor handling
     const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
@@ -83,7 +147,7 @@
       return id;
     }
     async function logEvent(type){
-      if (!canLog(type)) return; // rate-limit
+      if (!canLog(type)) return;
       const visitor_id = getVisitorId();
       const { error } = await supabaseClient.from('events').insert({ visitor_id, event_type: type });
       if (error) throw error;
@@ -94,22 +158,19 @@
         setStatus('kobler til…');
         await ensureVisitor();
         if (!localStorage.getItem("visited_once")) {
-          // egen rate-limit for visit (så den ikke spammes på refresh-loop)
           localStorage.setItem('rl_visit', Date.now());
           await supabaseClient.from('events').insert({ visitor_id: getVisitorId(), event_type: 'visit' });
           localStorage.setItem("visited_once", "1");
         }
         setStatus('tilkoblet ✓');
-      } catch (e) {
-        console.error(e);
-        setStatus('feil: ' + (e?.message || 'ukjent'));
-      }
+      } catch (e) { console.error(e); setStatus('feil: ' + (e?.message || 'ukjent')); }
     })();
 
-    // Klikk-logging (med rate-limit)
+    // Klikk-logging
     $('#telLink').on('click',  async () => { try { await logEvent('phone'); } catch(e){ setStatus('feil: '+e.message); } });
     $('#mailLink').on('click', async () => { try { await logEvent('email'); } catch(e){ setStatus('feil: '+e.message); } });
     $('#mailTextLink').on('click', async () => { try { await logEvent('email_link'); } catch(e){ setStatus('feil: '+e.message); } });
+
     $('#qrBtn').on('click',   async (e) => {
       e.preventDefault();
       try {
