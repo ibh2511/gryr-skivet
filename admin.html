@@ -44,7 +44,7 @@
         <tr><td>Nedlastinger</td><td id="download">…</td></tr>
       </tbody>
     </table>
-    <p class="muted">Oppdateres automatisk hvert 10. sekund.</p>
+    <p class="muted">Oppdateres automatisk hvert 30. sekund.</p>
   </div>
 
   <!-- FORBIDDEN -->
@@ -178,7 +178,7 @@
   
         document.getElementById('refreshBtn').addEventListener('click', fetchCounts);
         fetchCounts();
-        setInterval(fetchCounts, 10000);
+        setInterval(fetchCounts, 30000);
   
       } catch (err) {
         console.error(err);
