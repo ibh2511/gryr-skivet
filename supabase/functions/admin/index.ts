@@ -1,9 +1,7 @@
-// Admin-endepunkt for counts/reset/export.
-// Beskyttes med x-admin-key (egen hemmelig env-variabel).
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const url  = Deno.env.get("SUPABASE_URL")!;
-const key  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const url      = Deno.env.get("SB_URL")!;
+const key      = Deno.env.get("SB_SERVICE_ROLE_KEY")!;
 const adminKey = Deno.env.get("ADMIN_KEY")!;
 
 const hdrs = { "apikey": key, "Authorization": `Bearer ${key}`, "Content-Type":"application/json" };
