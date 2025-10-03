@@ -60,65 +60,70 @@
   .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
   .inline-email a{ color:#fff; font-weight:800; text-decoration:underline; }
 
-  /* FOOTER – full-bleed bølge nederst med fast frekvens */
-:root{
-  /* kontroller høyde og bølgelengde fra ett sted */
-  --wave-h: 200px;    /* total bølgehøyde */
-}
-
-footer{
-  margin-top:auto;
-  position:relative;
-
-  /* full-bleed: ignorer body-padding på sidene */
-  left:50%;
-  right:50%;
-  margin-left:-50vw;
-  margin-right:-50vw;
-  width:100vw;
-
-  padding:0;
-  background:transparent;
-}
-
-.footer-wave{
-  position:relative;
-  width:100%;
-  height:var(--wave-h);
-  overflow:hidden;
-}
-
-.wave-svg{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  display:block;
-  pointer-events:none; /* gjør at lenken er klikkbar */
-}
-
-/* bølgefargen = knappekantfargen */
-.wave-svg path,
-.wave-svg rect{ fill: var(--btn-border); }
-
-/* Plasser FB-lenken trygt inne i bølgen (over dalene) */
-.fb-share.on-wave{
-  position:absolute;
-  left:50%;
-  top: calc(var(--wave-h) * 0.42); /* ~42% ned fra toppen gir luft over/under */
-  transform: translate(-50%, -50%);
-  display:inline-flex; align-items:center; gap:8px;
-  color:#fff; font-weight:800; text-decoration:underline;
-  z-index:2;
-  /* liten intern luft uten bakplate */
-  padding:6px 10px;
-}
-
-.fb-share.on-wave:hover{ opacity:1; }
-.fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
-
-/* På veldig små skjermer, løft teksten litt ekstra */
-@media (max-width:420px){
-  .fb-share.on-wave{ top: calc(var(--wave-h) * 0.38); }
-}
+  /* FOOTER – full-bleed bølge nederst med fast frekvens og justert amplitude */
+  :root{
+    --wave-h: 180px;         /* total høyde på bølgefeltet */
+  }
+  
+  footer{
+    margin-top:auto;
+    position:relative;
+  
+    /* full-bleed: ignorér body-padding på sidene */
+    left:50%;
+    right:50%;
+    margin-left:-50vw;
+    margin-right:-50vw;
+    width:100vw;
+  
+    padding:0;
+    background:transparent;
+  }
+  
+  .footer-wave{
+    position:relative;
+    width:100%;
+    height:var(--wave-h);
+    overflow:hidden;
+  }
+  
+  .wave-svg{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    display:block;
+    pointer-events:none;
+  }
+  
+  /* bølgefargen = knappekantfargen */
+  .wave-svg path,
+  .wave-svg rect{ fill: var(--btn-border); }
+  
+  /* Plassér FB-lenken trygt INNE i bølgen (med luft) */
+  .fb-share.on-wave{
+    position:absolute;
+    left:50%;
+    top: calc(var(--wave-h) * 0.60);   /* ca. nedre midt – mer luft over/bak */
+    transform: translate(-50%, -50%);
+    display:inline-flex; align-items:center; gap:8px;
+    color:#fff; font-weight:800; text-decoration:underline;
+    z-index:2;
+    padding:6px 10px;                   /* liten intern luft, ingen bakplate */
+  }
+  
+  /* Små skjermer: litt lavere bølgehøyde og små justeringer */
+  @media (max-width: 480px){
+    :root{ --wave-h: 160px; }           /* litt lavere felt */
+    .fb-share.on-wave{ top: calc(var(--wave-h) * 0.58); } /* flytt litt oppover */
+  }
+  @media (max-width: 360px){
+    :root{ --wave-h: 150px; }
+    .fb-share.on-wave{ top: calc(var(--wave-h) * 0.56); }
+  }
+  
+  .fb-share.on-wave:hover{ opacity:1; }
+  .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
+  
+  
   /* Status-bubble */
   .status{ position:fixed; right:12px; bottom:12px; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff; }
 
