@@ -1,9 +1,7 @@
-// Logger hendelser fra index-siden.
-// Bruker Service Role (hemmelig i env). Ingen admin-nøkkel kreves (klientvennlig).
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const url  = Deno.env.get("SUPABASE_URL")!;
-const key  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!; // hemmelig
+const url  = Deno.env.get("SB_URL")!;
+const key  = Deno.env.get("SB_SERVICE_ROLE_KEY")!; // hemmelig
 const hdrs = { "apikey": key, "Authorization": `Bearer ${key}`, "Content-Type":"application/json" };
 
 serve(async (req) => {
