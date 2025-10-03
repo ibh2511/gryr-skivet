@@ -14,90 +14,116 @@
       --btn-bg: rgba(255,255,255,.08);
       --btn-bg-hover: rgba(255,255,255,.14);
       --btn-border: rgba(255,255,255,.35);
-      --btn-border-strong: rgba(255,255,255,.8); /* e-post-knappen */
+      --btn-border-strong: rgba(255,255,255,.85); /* e-post-knappen */
+      --card-bg: #ffffff;
+      --card-text: #0b3a4a;
+      --shadow: 0 8px 24px rgba(0,0,0,.18);
     }
+    * { box-sizing: border-box; }
     html,body { height:100%; margin:0; }
     body {
       background:var(--bg); color:var(--fg);
       font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      display:grid; place-items:center; padding: clamp(12px, 2vw, 24px);
+      display:grid; place-items:center; padding: clamp(12px, 3vw, 28px);
     }
-    .wrap {
-      width:min(680px, 96vw);
-      text-align:center;
-    }
+    .wrap { width:min(720px, 96vw); }
+
     h1 {
+      text-align:center;
       font-weight:800;
-      font-size: clamp(26px, 3.6vw, 40px);
-      margin: 0 0 8px;
+      font-size: clamp(26px, 4.5vw, 40px);
+      margin: 0 0 14px;
     }
+
+    /* Selling card – tydelig forskjellig fra knappene */
     .lead {
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 14px;
-      padding: clamp(12px, 2.2vw, 18px);
-      text-align: left;
+      background: var(--card-bg);
+      color: var(--card-text);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: clamp(14px, 3vw, 20px);
+      margin: 0 0 16px;
     }
     .lead h2 {
       margin: 0 0 6px;
-      font-size: clamp(18px, 2.4vw, 22px);
-      font-weight: 700;
+      font-size: clamp(18px, 3.5vw, 22px);
+      font-weight: 800;
     }
     .lead p {
       margin: 0;
-      line-height: 1.5;
-      font-size: clamp(14px, 2.2vw, 16px);
+      line-height: 1.55;
+      font-size: clamp(14px, 3.2vw, 16px);
     }
+
+    /* Ens «ramme» for like brede knapper */
+    .btns {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
     a.button, button.button {
-      display:block; width:100%;
-      padding: clamp(12px, 2.2vw, 14px) clamp(14px, 2.4vw, 16px);
-      margin: 10px 0;
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: clamp(12px, 2.6vw, 16px);
       border-radius: 12px;
       border: 2px solid var(--btn-border);
       background: var(--btn-bg);
-      color:#fff; text-decoration:none;
-      font-size: clamp(16px, 2.6vw, 18px);
+      color:#fff;
+      text-decoration: none;
+      font-size: clamp(16px, 3.6vw, 18px);
       font-weight: 700;
-      backdrop-filter: blur(4px);
-      cursor:pointer;
+      line-height: 1.25;
+      cursor: pointer;
       transition: background .15s ease, border-color .15s ease, transform .06s ease;
     }
     a.button:hover, button.button:hover { background: var(--btn-bg-hover); }
     a.button:active, button.button:active { transform: translateY(1px); }
 
-    /* E-post-knappen mer tydelig kant */
+    /* E-post-knappen: bare sterkere farge på kant (samme tykkelse) */
     .email-btn { border-color: var(--btn-border-strong); }
 
-    .hint { opacity:.9; font-size: clamp(12px, 2.2vw, 14px); margin-top:6px; }
+    .hint {
+      opacity:.95;
+      font-size: clamp(12px, 3.2vw, 14px);
+      margin: 6px 2px 12px;
+      text-align: center;
+    }
+    .inline-email a { color:#fff; font-weight:800; text-decoration: underline; }
+
     .status {
       position:fixed; right:12px; bottom:12px;
       background:rgba(0,0,0,.25); padding:6px 10px;
       border-radius:8px; font-size:12px;
     }
-    .inline-email a { color:#fff; font-weight:700; text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Kontakt</h1>
 
-    <!-- Ny intro-seksjon -->
-    <div class="lead" style="margin-bottom:14px;">
+    <div class="lead">
       <h2>Slik kontakter du oss</h2>
-      <p>Velg om du vil ringe i åpningstiden, sende en ferdig utfylt e-post via knappen, eller skrive fra ditt eget e-postprogram via lenken under.</p>
+      <p>Velg det som passer best: ring i åpningstiden for rask hjelp, bruk knappen for ferdig utfylt e-post – eller send fra ditt eget e-postprogram når det passer deg.</p>
     </div>
 
-    <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
-    <p class="hint">man–fre, 09–13</p>
+    <div class="btns">
+      <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
+      <p class="hint">man - fre, 09 - 13</p>
 
-    <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
-    <p class="hint inline-email">
-      Eller send fra ditt eget program til
-      <a id="mailTextLink" href="mailto:forbruker@tine.no">forbruker@tine.no</a>
-    </p>
+      <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
+      <p class="hint inline-email">
+        Trykk på knappen for ferdig e-post, eller send din egen til
+        <a id="mailTextLink" href="mailto:forbruker@tine.no">forbruker@tine.no</a>
+      </p>
 
-    <button id="qrBtn" class="button">Last ned skjermlåsbilde med QR-kode</button>
-    <p class="hint">QR-koden peker til denne siden.</p>
+      <button id="qrBtn" class="button">Last ned skjermlåsbilde med QR-kode</button>
+      <p class="hint">QR-koden peker til denne siden.</p>
+    </div>
   </div>
 
   <div class="status" id="status">kobler…</div>
