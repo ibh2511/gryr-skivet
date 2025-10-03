@@ -8,6 +8,30 @@
   <meta name="description" content="🌱 Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm - og del siden videre!">
   <meta name="theme-color" content="#01A0C6" />
 
+  <link rel="canonical" href="https://ibh2511.github.io/gryr-skivet/gryr-skivet" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Gryr Skivet – Aksjon">
+  <meta property="og:url" content="https://ibh2511.github.io/gryr-skivet/gryr-skivet">
+  <meta property="og:title" content="Få GRYR® SKIVET tilbake">
+  <meta property="og:description" content="Ring, send e-post, last ned QR – og del siden videre. Hjelp oss å få GRYR® SKIVET tilbake i butikkhyllene.">
+  <meta property="og:image" content="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg">
+  <meta property="og:image:secure_url" content="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Gryr Skivet - kontakt og del for å få produktet tilbake">
+  
+  <!-- X (Twitter) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Få GRYR® SKIVET tilbake">
+  <meta name="twitter:description" content="Ring, send e-post, last ned QR - og del siden videre.">
+  <meta name="twitter:image" content="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg">
+  
+  <!-- (valgfritt) Preload delebilde for raskere første deling -->
+  <link rel="preload" as="image" href="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg" imagesrcset="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg 1x">
+  
+
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
@@ -202,21 +226,29 @@
   <div class="status" id="status">kobler…</div>
 
   <script>
-    const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co"; 
+    // ======== Konfig (injiseres av Actions) ========
+    const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co";
     const LOG_URL = FN_BASE + "/log";
-
+  
+    // ======== UI-status ========
     const statusEl = document.getElementById('status');
-    const setStatus = (m) => statusEl.textContent = m;
-
+    const setStatus = (m) => { if (statusEl) statusEl.textContent = m; };
+  
+    // ======== Rate-limit pr. event-type ========
     const COOLDOWN_MS = 1500;
     function canLog(type){
       const key = 'rl_' + type;
       const now = Date.now();
       const last = +(localStorage.getItem(key) || 0);
-      if (now - last < COOLDOWN_MS) { setStatus(`vent ${Math.ceil((COOLDOWN_MS-(now-last))/1000)}s…`); return false; }
-      localStorage.setItem(key, now); return true;
+      if (now - last < COOLDOWN_MS) {
+        setStatus(`vent ${Math.ceil((COOLDOWN_MS-(now-last))/1000)}s…`);
+        return false;
+      }
+      localStorage.setItem(key, now);
+      return true;
     }
-
+  
+    // ======== Visitor-ID (UUID i localStorage) ========
     const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
@@ -225,7 +257,8 @@
       if(!id){ id = uuidv4(); localStorage.setItem("visitor_id", id); }
       return id;
     }
-
+  
+    // ======== Logging til Edge Function ========
     async function logEvent(event_type){
       if (!canLog(event_type)) return;
       try{
@@ -235,39 +268,79 @@
           body: JSON.stringify({ visitor_id: getVisitorId(), event_type })
         });
         if (!r.ok) throw new Error(await r.text());
-      }catch(err){ console.error(err); setStatus('feil: ' + (err?.message || 'ukjent')); }
+      }catch(err){
+        console.error(err);
+        setStatus('feil: ' + (err?.message || 'ukjent'));
+      }
     }
-
+  
+    // ======== Canonical URL for deling (pen URL uten hash/query) ========
+    const CANONICAL =
+      document.querySelector('link[rel="canonical"]')?.href
+      || (location.origin + location.pathname);
+  
+    // ======== Deling: native share (mobil) eller Facebook sharer (desktop) ========
+    async function shareOrOpenFacebook(){
+      try {
+        if (navigator.share) {
+          await navigator.share({
+            title: document.querySelector('meta[property="og:title"]')?.content || document.title,
+            text: document.querySelector('meta[property="og:description"]')?.content || '',
+            url: CANONICAL
+          });
+          // Tolk vellykket native share som "fb_share" for enkel konverteringsmåling
+          logEvent('fb_share');
+        } else {
+          const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
+          const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+          if (!w || w.closed || typeof w.closed === 'undefined') {
+            setStatus('Tillat pop-ups for å dele på Facebook.');
+            return;
+          }
+          // Logg først når vinduet faktisk er åpnet
+          setTimeout(() => logEvent('fb_share'), 120);
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus('Deling avbrutt.');
+      }
+    }
+  
+    // ======== Boot ========
     (async () => {
       try {
-        setStatus('kobler til…');
+        setStatus('Kobler til…');
         if (!localStorage.getItem("visited_once")) {
           await logEvent('visit');
           localStorage.setItem("visited_once","1");
         }
-        setStatus('tilkoblet ✓');
-      } catch (e) { console.error(e); setStatus('feil: ' + (e?.message || 'ukjent')); }
+        setStatus('Tilkoblet ✓');
+      } catch (e) {
+        console.error(e);
+        setStatus('feil: ' + (e?.message || 'ukjent'));
+      }
     })();
-
-    document.getElementById('telLink').addEventListener('click', () => logEvent('phone'));
-    document.getElementById('mailLink').addEventListener('click', () => logEvent('email'));
-    document.getElementById('mailTextLink').addEventListener('click', () => logEvent('email_link'));
-    document.getElementById('qrBtn').addEventListener('click', async (e) => {
+  
+    // ======== Klikk-handlere ========
+    document.getElementById('telLink')?.addEventListener('click', () => logEvent('phone'));
+    document.getElementById('mailLink')?.addEventListener('click', () => logEvent('email'));
+    document.getElementById('mailTextLink')?.addEventListener('click', () => logEvent('email_link'));
+  
+    document.getElementById('qrBtn')?.addEventListener('click', async (e) => {
       e.preventDefault();
       await logEvent('download');
       const a = document.createElement('a');
-      a.href = '/img/gryr-skivet-qr.png';
+      a.href = new URL('img/gryr-skivet-qr.png', location.href).href; // <- fungerer i subfoldere
       a.download = 'gryr-skivet-qr.png';
       document.body.appendChild(a); a.click(); a.remove();
     });
-    document.getElementById('fbShare').addEventListener('click', async (e) => {
+  
+    // Facebook-del
+    document.getElementById('fbShare')?.addEventListener('click', (e) => {
       e.preventDefault();
-      const url = encodeURIComponent(location.href.split('#')[0]);
-      const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-      const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
-      if (!w || w.closed || typeof w.closed === 'undefined') { setStatus('Tillat pop-ups for å dele på Facebook.'); return; }
-      setTimeout(() => logEvent('fb_share'), 120);
+      shareOrOpenFacebook();
     });
+
   </script>
 </body>
 </html>
