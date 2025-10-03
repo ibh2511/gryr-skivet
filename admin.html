@@ -16,6 +16,7 @@
     }
     .wrap{ max-width:1000px; margin:0 auto; }
     h1{ margin:0 0 12px; font-weight:800; font-size:clamp(22px,5vw,36px); text-wrap:balance; }
+
     .controls{ margin:12px 0 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     button{
       padding:10px 14px; border-radius:10px; border:2px solid rgba(255,255,255,.35);
@@ -27,13 +28,59 @@
     .danger{ border-color: rgba(255,200,200,.85); }
 
     .table-wrap{
-      width:100%; border-radius:14px; margin-bottom:14px; background: var(--card);
-      box-shadow: 0 8px 24px rgba(0,0,0,.18); overflow:auto;
+      width:100%;
+      border-radius:14px; margin-bottom:10px; background: var(--card);
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      overflow: hidden; /* unngå scrollbars */
     }
-    table{ width:100%; border-collapse:collapse; table-layout: fixed; font-size: clamp(13px,3.6vw,16px); min-width:560px; }
-    th,td{ padding: clamp(8px,3.2vw,14px) clamp(10px,3.5vw,16px); border-bottom:1px solid var(--line); text-align:left; white-space: normal; word-break: break-word; }
-    th{ background: rgba(255,255,255,.12); font-weight:800; position:sticky; top:0; }
+
+    /* Standard bord-oppsett (desktop) */
+    table{
+      width:100%; border-collapse:collapse;
+      table-layout: fixed;
+      font-size: clamp(13px,3.6vw,16px);
+    }
+    th,td{
+      padding: clamp(8px,3.2vw,14px) clamp(10px,3.5vw,16px);
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      vertical-align: top;
+      word-break: break-word;
+    }
+    th{ background: rgba(255,255,255,.12); font-weight:800; }
     tr:last-child td{ border-bottom:none; }
+
+    /* RESPONSIV: “kort”-visning uten horisontal scroll */
+    @media (max-width: 640px){
+      .table-wrap{ border-radius:12px; }
+      table, thead, tbody, tr, th, td { display:block; width:100%; }
+      thead{ display:none; }
+
+      tbody tr{
+        display:grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 14px;
+        padding: 10px 12px;
+        border-bottom:1px solid var(--line);
+      }
+      tbody tr:last-child{ border-bottom:none; }
+
+      /* første celle = metrikk (venstre), andre = tall (høyre) */
+      tbody tr td:nth-child(1){
+        grid-column: 1 / span 1;
+        font-weight: 800;
+        padding: 0;
+        border: 0;
+      }
+      tbody tr td:nth-child(2){
+        grid-column: 2 / span 1;
+        justify-self: end;
+        padding: 0;
+        border: 0;
+      }
+      /* make strong row label still bold in mobile */
+      tbody tr td strong{ font-weight: 800; }
+    }
 
     .panel{ max-width:720px; margin:0 auto; text-align:center; }
     .error-box{ background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35); padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
@@ -50,7 +97,6 @@
       <button id="refreshBtn">Oppdater nå</button>
       <button id="exportBtn">Eksporter CSV</button>
       <button id="resetBtn" class="danger">Nullstill data</button>
-      <span id="updatedAt" class="muted">—</span>
     </div>
 
     <div class="table-wrap">
@@ -72,6 +118,9 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Flyttet tilbake under tabellen -->
+    <p id="updatedAt" class="muted">—</p>
   </div>
 
   <div id="forbidden" class="panel" hidden>
