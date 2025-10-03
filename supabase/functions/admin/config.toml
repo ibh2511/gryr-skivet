@@ -1,2 +1,3 @@
 # Gjør /admin tilgjengelig uten Authorization-header
+[functions]
 verify_jwt = false
