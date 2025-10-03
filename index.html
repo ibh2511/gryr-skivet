@@ -35,7 +35,7 @@
     <p class="hint">QR-koden peker til denne siden.</p>
   </div>
 
-  <div class="status" id="status">kobler…</div>
+  <div class="status" id="status">kobler..</div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <!-- Supabase UMD (jsDelivr anbefales; unpkg som fallback om ønskelig) -->
@@ -80,7 +80,7 @@
 
     (async () => {
       try {
-        setStatus('kobler til...');
+        setStatus('kobler til..');
         await ensureVisitor();
         const firstKey = "visited_once";
         if(!localStorage.getItem(firstKey)){
