@@ -36,7 +36,6 @@
     body{
       background:var(--bg); color:var(--fg);
       font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      display:block;
       padding: clamp(12px, 4vw, 28px);
     }
     .wrap{ max-width: 760px; margin: 0 auto; }
@@ -107,29 +106,34 @@
     }
     .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
 
-    /* Footer – full bredde, bølge i toppen, FB-deling inne i footeren */
+    /* Footer – bølge i toppen, deling inne i bølgen */
     footer{
+      position: relative;
       width: 100%;
       margin: 28px 0 0;
-      padding: 0;   /* selve innholdet har padding i .footer-inner */
-      background: #fff; /* kontrast mot blå bakgrunn */
-      color: var(--bg); /* tekst i footeren = samme farge som bakgrunnen */
+      padding: 0;
+      background: transparent;
     }
     .wave{
-      display:block; width:100%; height:auto;
+      position: absolute;
+      top: -1px; left: 0;
+      width: 100%;
+      height: 100px;
+      display: block;
       line-height: 0;
+      pointer-events: none;
     }
     .footer-inner{
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 12px clamp(12px, 4vw, 24px) 18px;
-      display: flex; justify-content: center;
+      position: relative;
+      padding: 28px 16px 18px; /* plass slik at lenken ligger "i" bølgen */
+      display: flex;
+      justify-content: center;
     }
     .fb-share{
       display: inline-flex; align-items: center; gap: 8px;
       font-weight: 800; text-decoration: underline;
-      color: var(--bg);       /* “skriftfarge lik bakgrunnen” */
-      opacity: .85;
+      color: #fff;              /* hvit tekst i bølgen */
+      opacity: .95;
     }
     .fb-share:hover{ opacity: 1; }
     .fb-icon{ width: 1.1em; height: 1.1em; display:inline-block; }
@@ -138,8 +142,7 @@
     .status{
       position:fixed; right:12px; bottom:12px;
       background:rgba(0,0,0,.25); padding:6px 10px;
-      border-radius:8px; font-size:12px;
-      color: #fff;
+      border-radius:8px; font-size:12px; color:#fff;
     }
 
     @media (max-width: 360px){
@@ -195,9 +198,8 @@
     </div>
   </div>
 
-  <!-- Footer: bølge + deling -->
+  <!-- Footer: bølge (øverst) + hvit FB-delingslenke inne i bølgen -->
   <footer>
-    <!-- Bølgen er del av footeren og dekker hele bredden -->
     <svg class="wave" viewBox="0 0 1440 100" preserveAspectRatio="none" aria-hidden="true">
       <path fill="#01A0C6" d="M0,64L60,58.7C120,53,240,43,360,53.3C480,64,600,96,720,101.3C840,107,960,85,1080,64C1200,43,1320,21,1380,10.7L1440,0L1440,100L1380,100C1320,100,1200,100,1080,100C960,100,840,100,720,100C600,100,480,100,360,100C240,100,120,100,60,100L0,100Z"></path>
     </svg>
@@ -213,18 +215,19 @@
 
   <div class="status" id="status">kobler…</div>
 
-  <!-- jQuery (valgfritt) + Supabase UMD -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <!-- Supabase UMD -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" crossorigin="anonymous"></script>
   <script>
-    const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
+    // Supabase-kredentialer (kan injiseres via GitHub Actions hvis ønskelig)
+    const SUPABASE_URL  = "__SUPABASE_URL__";
+    const SUPABASE_ANON = "__SUPABASE_ANON__";
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
+    // Status-boble
     const statusEl = document.getElementById('status');
     const setStatus = (m) => statusEl.textContent = m;
 
-    // Rate-limit (per event)
+    // Rate-limit (per event-type)
     const COOLDOWN_MS = 1500;
     function canLog(type){
       const key = 'rl_' + type;
@@ -234,6 +237,7 @@
       localStorage.setItem(key, now); return true;
     }
 
+    // Visitor-Id
     const uuidv4 = () => ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
       (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
@@ -242,6 +246,8 @@
       if(!id){ id = uuidv4(); localStorage.setItem("visitor_id", id); }
       return id;
     }
+
+    // Sørg for visitor + første-besøk
     async function ensureVisitor(){
       const id = getVisitorId();
       const { data, error } = await supabaseClient.from('visitors').select('id').eq('id', id).limit(1);
@@ -252,6 +258,8 @@
       }
       return id;
     }
+
+    // Logg event
     async function logEvent(type){
       if (!canLog(type)) return;
       const visitor_id = getVisitorId();
@@ -259,6 +267,7 @@
       if (error) throw error;
     }
 
+    // Boot
     (async () => {
       try {
         setStatus('kobler til…');
