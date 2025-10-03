@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Få Gryr skivet ost tilbake – kontakt & del</title>
 
-  <meta name="description" content="Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm – og del siden videre!">
+  <meta name="description" content="🌱 Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm - og del siden videre!">
   <meta name="theme-color" content="#01A0C6" />
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
     --accent:#F4D31F;
     --btn-bg: rgba(255,255,255,.08);
     --btn-bg-hover: rgba(255,255,255,.14);
-    --btn-border: rgba(255,255,255,.35);      /* wave color = button border */
+    --btn-border: rgba(255,255,255,.35);     
     --btn-border-strong: rgba(255,255,255,.85);
   }
   *{ box-sizing:border-box; }
@@ -28,8 +28,8 @@
     background:var(--bg); color:var(--fg);
     font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
     padding: clamp(12px,4vw,28px);
-    padding-bottom: 0;                  /* no gap under the footer */
-    overflow-x: hidden;                 /* never allow sideways scroll */
+    padding-bottom: 0;                  
+    overflow-x: hidden;                
   }
 
   .wrap{ flex:1 0 auto; max-width:760px; margin:0 auto; }
@@ -60,17 +60,16 @@
   .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
   .inline-email a{ color:#fff; font-weight:800; text-decoration:underline; }
 
-  /* FOOTER – full-bleed bølge nederst med fast frekvens og mer luft */
+  /* FOOTER */
   :root{
-    --wave-h: 300px;   /* Økt høyde for mer luft (før var 180) */
-    --wave-pos: 0.83;  /* 0=toppen, 1=bunnen – legger teksten under bølgetoppene */
+    --wave-h: 300px;   
+    --wave-pos: 0.83;  
   }
   
   footer{
     margin-top:auto;
     position:relative;
   
-    /* full-bleed: ignorér body-padding på sidene */
     left:50%;
     right:50%;
     margin-left:-50vw;
@@ -95,11 +94,9 @@
     pointer-events:none;
   }
   
-  /* bølgefargen = knappekantfargen */
   .wave-svg path,
   .wave-svg rect{ fill: var(--btn-border); }
   
-  /* Plasser FB-lenken under toppene, med god luft over/under */
   .fb-share.on-wave{
     position:absolute;
     left:50%;
@@ -108,17 +105,19 @@
     display:inline-flex; align-items:center; gap:8px;
     color:#fff; font-weight:800; text-decoration:underline;
     z-index:2;
-    padding:6px 10px; /* liten intern luft, ingen bakplate */
+    padding:6px 10px; 
   }
   
   .fb-share.on-wave:hover{ opacity:1; }
   .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
   
-  /* Små skjermer: litt lavere felt + litt lavere pos i bølgen */
   @media (max-width: 480px){
     :root{
       --wave-h: 150px;
       --wave-pos: 0.80;
+    }
+    .lead{
+      text-align:left;
     }
   }
   @media (max-width: 360px){
@@ -126,6 +125,9 @@
       --wave-h: 130px;
       --wave-pos: 0.75;
     }
+    .lead{
+      text-align:left;
+    }    
   }
 
   
@@ -134,34 +136,40 @@
 
   @media (max-width:360px){
     .btn-icon,.fb-icon{ width:1.1em; height:1.1em; }
-    /* keep the link a touch higher on very small screens */
     .fb-share.on-wave{ top:40%; }
   }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Kontakt</h1>
+    <h1 class="brand">GRYR® SKIVE</h1>
 
     <p class="lead">
       😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
       Nok et produkt er borte fra butikkhyllene.<br><br>
-      <span class="brand">GRYR® SKIVET</span> må tilbake! 💪<br>
-      Ring ☎️, send e-post 📧 og last ned QR-kode til denne siden som låseskjerm 🔒 – be alle du kjenner om å gjøre det samme.<br>
-      Del også linken til denne siden på Facebook 👍.
+      <span class="brand">GRYR® SKIVET</span> må tilbake! <br><br>
+      Ring, send e-post, last ned QR-kode til låseskjerm - og del siden videre 📢 <br><br>
+      Del også linken til denne siden på Facebook 👍<br><br>
     </p>
 
     <div class="btns">
       <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
-      <p class="hint">man - fre, 09 - 13</p>
-
-      <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
+      <p class="hint">man - fre, kl 09 - 13</p>
+      <a id="mailLink" class="button email-btn"
+         href="mailto:forbruker@tine.no?subject=🌱 GRYR® SKIVET tilbake?&body=Hei Tine,
+      
+      😞 Det er kjedelig når bra produkter forsvinner fra butikkene. Jeg håper dere revurderer og setter GRYR® SKIVET i produksjon igjen, så den kommer tilbake – vi er mange som savner den.
+      
+      Vennlig hilsen
+      [ DITT_NAVN ] ❓">
+        Send e-post
+      </a>      
       <p class="hint inline-email">
         Trykk på knappen for ferdig e-post, eller send din egen til
         <a id="mailTextLink" href="mailto:forbruker@tine.no">forbruker@tine.no</a>
       </p>
 
-      <button id="qrBtn" class="button">Last ned skjermlåsbilde med QR-kode</button>
+      <button id="qrBtn" class="button">Last ned skjermbilde med QR-kode</button>
       <p class="hint">QR-koden peker til denne siden.</p>
     </div>
   </div>
@@ -194,7 +202,6 @@
   <div class="status" id="status">kobler…</div>
 
   <script>
-    // ======== Edge Function (log) – konfig injiseres av Actions ========
     const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co"; 
     const LOG_URL = FN_BASE + "/log";
 
@@ -249,7 +256,7 @@
       e.preventDefault();
       await logEvent('download');
       const a = document.createElement('a');
-      a.href = 'gryr-skivet-qr.png';
+      a.href = '/img/gryr-skivet-qr.png';
       a.download = 'gryr-skivet-qr.png';
       document.body.appendChild(a); a.click(); a.remove();
     });
