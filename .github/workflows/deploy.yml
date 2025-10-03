@@ -21,23 +21,90 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # (Debug) Se at filene er der vi forventer
+      - name: List files
+        run: |
+          pwd
+          ls -la
+          echo "== supabase/functions =="
+          ls -la supabase/functions || true
+          echo "== admin =="
+          ls -la supabase/functions/admin || true
+          echo "== log =="
+          ls -la supabase/functions/log || true
+
       # Installer Supabase CLI
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      # Deploy Edge Functions (log + admin)
+      # ⬇️ Injiser __PROJECT_REF__ i HTML før vi bygger/publiserer
+      - name: Inject placeholders
+        shell: bash
+        env:
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          if [ -z "${PROJECT_REF:-}" ]; then
+            echo "Missing SUPABASE_PROJECT_REF secret"; exit 1
+          fi
+
+          esc(){ printf '%s' "$1" | sed -e 's/[\/&\\]/\\&/g'; }
+          REF_ESC="$(esc "$PROJECT_REF")"
+
+          for f in index.html admin.html; do
+            if [ -f "$f" ]; then
+              sed -i "s/__PROJECT_REF__/$REF_ESC/g" "$f"
+              sed -i "s/__project_ref__/$REF_ESC/g" "$f" || true
+            else
+              echo "File not found: $f"
+            fi
+          done
+
+      # ✅ Verifiser at plassholderne er borte (feil workflow hvis ikke)
+      - name: Verify replacements
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== index.html FN_BASE line ==="
+          (grep -n "FN_BASE" index.html || true) && (sed -n '/FN_BASE/p' index.html || true)
+          echo "=== admin.html FN_BASE line ==="
+          (grep -n "FN_BASE" admin.html || true) && (sed -n '/FN_BASE/p' admin.html || true)
+
+          REMAIN=$(grep -R "__PROJECT_REF__" -n || true)
+          if [ -n "$REMAIN" ]; then
+            echo "::error ::Placeholder __PROJECT_REF__ still present in files:"
+            echo "$REMAIN"
+            exit 1
+          fi
+
+      # Link prosjekt + deploy Edge Functions (tving av JWT-verifisering)
       - name: Supabase functions deploy
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
+          set -euo pipefail
           supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
           supabase functions deploy log --no-verify-jwt
           supabase functions deploy admin --no-verify-jwt
 
+      # (Rask røyk-test i loggen – valgfritt men nyttig)
+      - name: Smoke test admin function (no auth)
+        run: |
+          set -euo pipefail
+          curl -i -X OPTIONS \
+            -H "Origin: https://ibh2511.github.io" \
+            -H "Access-Control-Request-Method: POST" \
+            "https://${{ secrets.SUPABASE_PROJECT_REF }}.functions.supabase.co/admin" || true
+          echo "---"
+          curl -i -X POST \
+            -H "Origin: https://ibh2511.github.io" \
+            -H "Content-Type: application/json" \
+            --data '{"op":"ping"}' \
+            "https://${{ secrets.SUPABASE_PROJECT_REF }}.functions.supabase.co/admin" || true
 
-      # Publiser hele repoet som Pages
+      # Publiser til GitHub Pages
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
