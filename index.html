@@ -250,10 +250,28 @@
     // Facebook share – mindre synlig knapp, men vi logger 'fb_share' først
     document.getElementById('fbShare').addEventListener('click', async (e) => {
       e.preventDefault();
-      try { await logEvent('fb_share'); } catch(_) {}
       const url = encodeURIComponent(location.href.split('#')[0]);
       const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-      window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+  
+      // Forsøk å åpne vindu først (pop-up kan blokkeres)
+      const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+  
+      if (!w || w.closed || typeof w.closed === 'undefined') {
+        // Pop-up ble blokkert – ikke logg. Vis vennlig beskjed.
+        setStatus('Tillat pop-ups for å dele på Facebook.');
+        return;
+      }
+  
+      // Vinduet ble åpnet – logg fb_share.
+      try { await logEvent('fb_share'); } catch (_) {}
+  
+      // Valgfritt: liten polling for å merke at vindu ble stengt (kun UI, ingen ekstra logging)
+      const poll = setInterval(() => {
+        if (w.closed) {
+          clearInterval(poll);
+          setStatus('Takk for at du delte! 💙');
+        }
+      }, 800);
     });
   </script>
 </body>
