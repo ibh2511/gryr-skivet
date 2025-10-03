@@ -62,7 +62,7 @@
 
   /* FOOTER – full-bleed bølge nederst med fast frekvens og mer luft */
   :root{
-    --wave-h: 220px;   /* Økt høyde for mer luft (før var 180) */
+    --wave-h: 300px;   /* Økt høyde for mer luft (før var 180) */
     --wave-pos: 0.70;  /* 0=toppen, 1=bunnen – legger teksten under bølgetoppene */
   }
   
@@ -117,13 +117,13 @@
   /* Små skjermer: litt lavere felt + litt lavere pos i bølgen */
   @media (max-width: 480px){
     :root{
-      --wave-h: 190px;   /* var 160–180; gir mer luft enn før */
+      --wave-h: 250px;   /* var 160–180; gir mer luft enn før */
       --wave-pos: 0.72;  /* senk litt */
     }
   }
   @media (max-width: 360px){
     :root{
-      --wave-h: 180px;
+      --wave-h: 200px;
       --wave-pos: 0.74;
     }
   }
