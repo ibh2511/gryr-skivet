@@ -15,10 +15,11 @@
     body{
       background:var(--bg); color:var(--fg);
       font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      display:block; padding: clamp(12px, 4vw, 28px);
+      padding: clamp(12px, 4vw, 28px);
     }
     .wrap{ max-width: 1000px; margin: 0 auto; }
-    h1{ margin:0 0 12px; font-weight:800; font-size: clamp(24px, 6vw, 36px); text-wrap: balance; }
+    h1{ margin:0 0 12px; font-weight:800; font-size: clamp(22px, 5vw, 36px); text-wrap: balance; }
+
     .controls{
       margin: 12px 0 16px; display:flex; gap:10px; align-items:center; flex-wrap: wrap;
     }
@@ -32,25 +33,38 @@
     button:hover{ background: rgba(255,255,255,.14); }
     button:active{ transform: translateY(1px); }
     .danger{ border-color: rgba(255,200,200,.85); }
-    .muted{ opacity:.9; font-size: clamp(12px, 4vw, 14px); }
+    .muted{ opacity:.9; font-size: clamp(12px, 3.5vw, 14px); }
 
+    /* TABELL – uten horisontal scroll */
     .table-wrap{
-      width:100%; overflow-x:auto;
+      width:100%;
       border-radius:14px; margin-bottom:14px;
       background: rgba(255,255,255,.08);
       box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      overflow: hidden; /* ingen ekstra scrollbars */
     }
     table{
-      width:100%; border-collapse: collapse; min-width:520px;
-      font-size: clamp(14px, 4.2vw, 16px);
+      width:100%;
+      border-collapse: collapse;
+      table-layout: fixed;           /* faste kolonner */
+      font-size: clamp(13px, 3.8vw, 16px);
     }
     th,td{
-      padding: clamp(10px, 3.6vw, 14px) clamp(12px, 4vw, 16px);
+      padding: clamp(8px, 3.2vw, 14px) clamp(10px, 3.5vw, 16px);
       border-bottom: 1px solid rgba(255,255,255,.25);
-      text-align:left; white-space: nowrap;
+      text-align:left;
+      white-space: normal;           /* bryt linjer */
+      word-break: break-word;        /* bryt lange ord/id-er */
     }
     th{ background: rgba(255,255,255,.12); font-weight:800; }
     tr:last-child td{ border-bottom:none; }
+
+    /* Små skjermer: litt tettere layout */
+    @media (max-width: 420px){
+      .controls { gap:6px; }
+      button { padding: 8px 10px; border-width: 1.5px; font-weight: 700; }
+      th,td { padding: 8px 10px; }
+    }
 
     .panel{ max-width:720px; margin: 0 auto; text-align:center; }
     .error-box{ background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35);
@@ -98,20 +112,22 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
   <script>
-    const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
-    const FALLBACK_ADMIN_KEY   = "hemmelig"; // fallback hvis ?key ikke er i URL
+    /* === KONFIG === */
+    const SUPABASE_URL   = "__SUPABASE_URL__";   // fyll inn / injiser via GitHub Actions
+    const SUPABASE_ANON  = "__SUPABASE_ANON__";
+    const EXPECTED_ADMIN_KEY = "bytt_denne_ut";  // ← bare denne nøkkelen i ?key=... skal fungere
 
+    /* === UI helpers === */
+    const $ = (sel) => document.querySelector(sel);
     function show(id, on=true){ document.getElementById(id).hidden = !on; }
-    function setStatus(msg){ document.getElementById('status').textContent = msg; }
-    function setUpdated(ts){ document.getElementById('updatedAt').textContent = 'Sist oppdatert: ' + ts; }
+    function setStatus(msg){ $('#status').textContent = msg; }
+    function setUpdated(ts){ $('#updatedAt').textContent = 'Sist oppdatert: ' + ts; }
     function showError(err){
       show('app', false); show('forbidden', false); show('error', true);
-      document.getElementById('errorDetails').textContent =
-        (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
+      $('#errorDetails').textContent = (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
     }
 
-    // Last Supabase UMD
+    /* === Last Supabase UMD === */
     function loadScript(src){
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -121,20 +137,20 @@
       });
     }
     async function ensureSupabaseUMD(){
-      const cdns = [
+      const urls = [
         "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js",
-        "https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"
+        "https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js",
       ];
       let err;
-      for (const url of cdns) { try { await loadScript(url); if (window.supabase) return; } catch(e){ err=e; } }
+      for (const u of urls) { try { await loadScript(u); if (window.supabase) return; } catch(e){ err = e; } }
       throw err || new Error('Supabase UMD ikke lastet.');
     }
 
     (async function boot(){
       try {
-        const params = new URLSearchParams(location.search);
-        const ADMIN_KEY = params.get("key") || FALLBACK_ADMIN_KEY;
-        if (!ADMIN_KEY || ADMIN_KEY === "__ADMIN_TOKEN__") { show('forbidden', true); return; }
+        // Streng URL-nøkkel (ingen fallback)
+        const key = new URLSearchParams(location.search).get("key") || "";
+        if (key !== EXPECTED_ADMIN_KEY) { show('forbidden', true); return; }
 
         await ensureSupabaseUMD();
         if (!SUPABASE_URL || !SUPABASE_ANON) throw new Error('Mangler SUPABASE_URL/ANON.');
@@ -164,12 +180,12 @@
             const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0 };
             (evts || []).forEach(e => { if (counts[e.event_type] !== undefined) counts[e.event_type]++; });
 
-            document.getElementById('uniq').textContent       = uniqCount ?? 0;
-            document.getElementById('phone').textContent      = counts.phone;
-            document.getElementById('email').textContent      = counts.email;
-            document.getElementById('email_link').textContent = counts.email_link;
-            document.getElementById('download').textContent   = counts.download;
-            document.getElementById('fb_share').textContent   = counts.fb_share;
+            $('#uniq').textContent       = uniqCount ?? 0;
+            $('#phone').textContent      = counts.phone;
+            $('#email').textContent      = counts.email;
+            $('#email_link').textContent = counts.email_link;
+            $('#download').textContent   = counts.download;
+            $('#fb_share').textContent   = counts.fb_share;
 
             setUpdated(new Date().toLocaleTimeString());
             setStatus('OK');
@@ -214,12 +230,12 @@
             setStatus('Nullstiller…');
             const nowIso = new Date().toISOString();
 
-            // Slett events først
+            // Slett events
             const { data: evDel, error: evErr } = await client
               .from('events')
               .delete()
               .lt('created_at', nowIso)
-              .select('event_type'); // gir antall
+              .select('event_type'); // for å telle
             if (evErr) throw new Error('Sletting events: ' + evErr.message);
 
             // Slett visitors
@@ -245,10 +261,8 @@
 
       } catch (err) {
         console.error(err);
-        const params = new URLSearchParams(location.search);
-        const ADMIN_KEY = params.get("key") || FALLBACK_ADMIN_KEY;
-        if (!ADMIN_KEY || ADMIN_KEY === "__ADMIN_TOKEN__") show('forbidden', true);
-        else showError(err);
+        show('error', true);
+        document.getElementById('errorDetails').textContent = err?.message || String(err);
       }
     })();
   </script>
