@@ -1,0 +1,2 @@
+# Gjør /log tilgjengelig uten Authorization-header
+verify_jwt = false
