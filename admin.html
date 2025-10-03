@@ -4,35 +4,59 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin – Statistikk</title>
+
+  <!-- Nunito Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root { --bg:#01A0C6; --fg:#fff; }
     html,body { height:100%; margin:0; }
     body {
       background:var(--bg); color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-      display:grid; place-items:center; padding:24px;
+      font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      display:grid; place-items:center; padding: clamp(12px, 2vw, 24px);
     }
-    .wrap { width:min(720px,96vw); }
-    table { width:100%; border-collapse:collapse; background:rgba(255,255,255,.08); border-radius:12px; overflow:hidden; }
-    th,td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.25); text-align:left; }
-    th { background:rgba(255,255,255,.12); }
-    tr:last-child td { border-bottom:none; }
-    .controls { margin:16px 0 24px; display:flex; gap:10px; align-items:center; }
-    button { padding:10px 14px; border-radius:8px; border:2px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; cursor:pointer; }
-    button:hover { background:rgba(255,255,255,.14); }
-    .muted { opacity:.85; font-size:14px; }
+    .wrap { width:min(900px, 96vw); }
+    h1 { margin: 0 0 10px; font-weight:800; font-size: clamp(24px, 3.4vw, 36px); }
+    .controls { margin: 16px 0 18px; display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    button {
+      padding: 10px 14px; border-radius: 10px;
+      border: 2px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.08);
+      color: #fff; cursor: pointer; font-weight:700;
+      transition: background .15s ease, transform .06s ease;
+    }
+    button:hover { background: rgba(255,255,255,.14); }
+    button:active { transform: translateY(1px); }
+    .danger { border-color: rgba(255,200,200,.85); }
+    .muted { opacity:.9; font-size: clamp(12px, 2vw, 14px); }
+    table {
+      width:100%; border-collapse: collapse;
+      background: rgba(255,255,255,.08);
+      border-radius: 14px; overflow: hidden;
+      margin-bottom: 16px;
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+    th, td {
+      padding: clamp(10px, 2vw, 14px) clamp(12px, 2.2vw, 16px);
+      border-bottom: 1px solid rgba(255,255,255,.25);
+      text-align:left;
+    }
+    th { background: rgba(255,255,255,.12); font-weight:800; }
+    tr:last-child td { border-bottom: none; }
+
     .panel { max-width:720px; text-align:center; }
-    .error-box { background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35); padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
+    .error-box { background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35);
+      padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
     code { background:rgba(0,0,0,.25); padding:0 6px; border-radius:6px; }
   </style>
 </head>
-<!-- behold head + base-styles slik du har; her er body-innhold og skriptet -->
 <body>
   <div class="wrap" id="app" hidden>
     <h1>Statistikk</h1>
     <div class="controls">
       <button id="refreshBtn">Oppdater nå</button>
-      <button id="resetBtn" style="margin-left:auto;">Nullstill data</button>
+      <button id="resetBtn" class="danger">Nullstill data</button>
       <span class="muted" id="status">—</span>
     </div>
 
@@ -47,7 +71,7 @@
       </tbody>
     </table>
 
-    <h2 style="margin-top:28px;">Siste hendelser</h2>
+    <h2 style="margin: 10px 0;">Siste hendelser</h2>
     <table>
       <thead><tr><th>Tid</th><th>Hendelse</th></tr></thead>
       <tbody id="recentBody">
@@ -58,7 +82,7 @@
     <p class="muted" id="updatedAt">—</p>
   </div>
 
-  <div id="forbidden" class="forbidden" hidden>
+  <div id="forbidden" class="panel" hidden>
     <h2>Mangler tilgang</h2>
     <p>Legg til <code>?key=DIN_HEMMELIGE_NØKKEL</code> i URL.</p>
   </div>
@@ -80,9 +104,11 @@
     function setUpdated(ts){ document.getElementById('updatedAt').textContent = 'Sist oppdatert: ' + ts; }
     function showError(err){
       show('app', false); show('forbidden', false); show('error', true);
-      document.getElementById('errorDetails').textContent = (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
+      document.getElementById('errorDetails').textContent =
+        (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
     }
 
+    // Supabase UMD loader
     function loadScript(src){
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -118,15 +144,12 @@
 
         show('app', true);
 
-        function fmt(d){
-          try { return new Date(d).toLocaleString(); } catch { return d; }
-        }
+        function fmt(d){ try { return new Date(d).toLocaleString(); } catch { return d; } }
 
         async function fetchCountsAndRecent() {
           try {
             setStatus('Henter…');
 
-            // Telleverk
             const { count: uniqCount, error: uErr } = await client
               .from('visitors').select('*', { count:'exact', head:true });
             if (uErr) throw new Error(uErr.message);
@@ -146,28 +169,20 @@
             document.getElementById('email_link').textContent  = counts.email_link;
             document.getElementById('download').textContent    = counts.download;
 
-            // Siste 20 hendelser
             const recentEl = document.getElementById('recentBody');
             recentEl.innerHTML = '';
             (evts || []).slice(0, 20).forEach(e => {
               const tr = document.createElement('tr');
-              const tdTime = document.createElement('td');
-              const tdType = document.createElement('td');
-              tdTime.textContent = fmt(e.created_at);
-              tdType.textContent = e.event_type;
-              tr.appendChild(tdTime); tr.appendChild(tdType);
+              tr.innerHTML = `<td>${fmt(e.created_at)}</td><td>${e.event_type}</td>`;
               recentEl.appendChild(tr);
             });
             if (!evts || evts.length === 0) {
               recentEl.innerHTML = '<tr><td colspan="2" class="muted">Ingen hendelser ennå</td></tr>';
             }
 
-            const now = new Date().toLocaleTimeString();
-            setUpdated(now);
+            setUpdated(new Date().toLocaleTimeString());
             setStatus('OK');
-          } catch (err) {
-            console.error(err); setStatus('Feil ved henting'); showError(err);
-          }
+          } catch (err) { console.error(err); setStatus('Feil ved henting'); showError(err); }
         }
 
         async function resetAll() {
@@ -175,12 +190,30 @@
           if (!ok) return;
           try {
             setStatus('Nullstiller…');
-            const delEvents   = await client.from('events').delete().neq('id', null);
-            if (delEvents.error) throw new Error('Sletting events: ' + delEvents.error.message);
-            const delVisitors = await client.from('visitors').delete().neq('id', null);
-            if (delVisitors.error) throw new Error('Sletting visitors: ' + delVisitors.error.message);
+            // Slett alle events og visitors ved tidsbetingelse < nå (unngår uuid/null-problemer)
+            const nowIso = new Date().toISOString();
+
+            const { data: evDel, error: evErr } = await client
+              .from('events')
+              .delete()
+              .lt('created_at', nowIso)
+              .select('id'); // få antall slettet
+            if (evErr) throw new Error('Sletting events: ' + evErr.message);
+
+            const { data: viDel, error: viErr } = await client
+              .from('visitors')
+              .delete()
+              .lt('first_seen', nowIso)
+              .select('id');
+            if (viErr) throw new Error('Sletting visitors: ' + viErr.message);
+
+            const total = (evDel?.length || 0) + (viDel?.length || 0);
+            if (total === 0) {
+              setStatus('Ingen data å slette (allerede tomt)');
+            } else {
+              setStatus(`Nullstilt ✓ (slettet ${total})`);
+            }
             await fetchCountsAndRecent();
-            setStatus('Nullstilt ✓');
           } catch (err) {
             console.error(err); setStatus('Feil ved nullstilling'); showError(err);
           }
@@ -203,4 +236,3 @@
   </script>
 </body>
 </html>
-
