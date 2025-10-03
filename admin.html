@@ -35,40 +35,45 @@
     .danger{ border-color: rgba(255,200,200,.85); }
     .muted{ opacity:.9; font-size: clamp(12px, 3.5vw, 14px); }
 
-    /* TABELL – uten horisontal scroll */
     .table-wrap{
       width:100%;
       border-radius:14px; margin-bottom:14px;
       background: rgba(255,255,255,.08);
       box-shadow: 0 8px 24px rgba(0,0,0,.18);
-      overflow: hidden; /* ingen ekstra scrollbars */
+      overflow: hidden;
     }
     table{
       width:100%;
       border-collapse: collapse;
-      table-layout: fixed;           /* faste kolonner */
+      table-layout: fixed;
       font-size: clamp(13px, 3.8vw, 16px);
     }
     th,td{
       padding: clamp(8px, 3.2vw, 14px) clamp(10px, 3.5vw, 16px);
       border-bottom: 1px solid rgba(255,255,255,.25);
       text-align:left;
-      white-space: normal;           /* bryt linjer */
-      word-break: break-word;        /* bryt lange ord/id-er */
+      white-space: normal;
+      word-break: break-word;
     }
     th{ background: rgba(255,255,255,.12); font-weight:800; }
     tr:last-child td{ border-bottom:none; }
 
-    /* Små skjermer: litt tettere layout */
-    @media (max-width: 420px){
-      .controls { gap:6px; }
-      button { padding: 8px 10px; border-width: 1.5px; font-weight: 700; }
-      th,td { padding: 8px 10px; }
+    /* Flytende status nederst til høyre */
+    .status{
+      position:fixed; right:12px; bottom:12px;
+      background:rgba(0,0,0,.25); padding:6px 10px;
+      border-radius:8px; font-size:12px;
     }
 
     .panel{ max-width:720px; margin: 0 auto; text-align:center; }
     .error-box{ background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35);
       padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
+
+    @media (max-width: 420px){
+      .controls { gap:6px; }
+      button { padding: 8px 10px; border-width: 1.5px; }
+      th,td { padding: 8px 10px; }
+    }
   </style>
 </head>
 <body>
@@ -79,7 +84,6 @@
       <button id="refreshBtn">Oppdater nå</button>
       <button id="exportBtn">Eksporter CSV</button>
       <button id="resetBtn" class="danger">Nullstill data</button>
-      <span class="muted" id="status">—</span>
     </div>
 
     <div class="table-wrap">
@@ -92,6 +96,7 @@
           <tr><td>E-post lenke</td><td id="email_link">…</td></tr>
           <tr><td>Nedlastinger</td><td id="download">…</td></tr>
           <tr><td>Facebook delinger</td><td id="fb_share">…</td></tr>
+          <tr><td><strong>Engasjement</strong> (unike som har klikket ≥1 lenke)</td><td id="engagement">…</td></tr>
         </tbody>
       </table>
     </div>
@@ -110,12 +115,13 @@
     <div id="errorDetails" class="error-box"></div>
   </div>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+  <div class="status" id="status">kobler…</div>
+
   <script>
     /* === KONFIG === */
-    const SUPABASE_URL  = "https://hxojgjbdepemuyztjroz.supabase.co";
-    const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
-    const EXPECTED_ADMIN_KEY = "hemmeligt";  // ← bare denne nøkkelen i ?key=... skal fungere
+    const SUPABASE_URL   = "https://hxojgjbdepemuyztjroz.supabase.co";   // fyll inn / injiser via GitHub Actions
+    const SUPABASE_ANON  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4b2pnamJkZXBlbXV5enRqcm96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzNzc4NjcsImV4cCI6MjA3NDk1Mzg2N30.d9ghsXaRTBgNqEoNKXIgWXBHJC_p9TaLAOM3znuNcFY";
+    const EXPECTED_ADMIN_KEY = "hemmelig";  // ← bare denne nøkkelen i ?key=... skal fungere
 
     /* === UI helpers === */
     const $ = (sel) => document.querySelector(sel);
@@ -178,7 +184,13 @@
             if (eErr) throw new Error(eErr.message);
 
             const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0 };
-            (evts || []).forEach(e => { if (counts[e.event_type] !== undefined) counts[e.event_type]++; });
+            const CLICK_TYPES = new Set(['phone','email','email_link','download','fb_share']);
+            const uniqueClickers = new Set();
+
+            (evts || []).forEach(e => {
+              if (counts[e.event_type] !== undefined) counts[e.event_type]++;
+              if (CLICK_TYPES.has(e.event_type) && e.visitor_id) uniqueClickers.add(e.visitor_id);
+            });
 
             $('#uniq').textContent       = uniqCount ?? 0;
             $('#phone').textContent      = counts.phone;
@@ -186,6 +198,12 @@
             $('#email_link').textContent = counts.email_link;
             $('#download').textContent   = counts.download;
             $('#fb_share').textContent   = counts.fb_share;
+
+            // Engasjement = unike clickers / unike besøkende
+            const engaged = uniqueClickers.size;
+            const denom   = uniqCount || 0;
+            const pct     = denom ? Math.round((engaged/denom)*100) : 0;
+            $('#engagement').textContent = `${engaged} / ${denom} (${pct}%)`;
 
             setUpdated(new Date().toLocaleTimeString());
             setStatus('OK');
