@@ -6,29 +6,40 @@
   <title>Admin – Statistikk</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --bg:#01A0C6; --fg:#fff; }
+    :root { --bg:#01A0C6; --fg:#fff; --card: rgba(255,255,255,.08); --line: rgba(255,255,255,.25); }
     * { box-sizing: border-box; }
     html,body{ height:100%; margin:0; }
-    body{ background:var(--bg); color:var(--fg); font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: clamp(12px, 4vw, 28px); }
-    .wrap{ max-width: 1000px; margin: 0 auto; }
-    h1{ margin:0 0 12px; font-weight:800; font-size: clamp(22px, 5vw, 36px); text-wrap: balance; }
-
-    .controls{ margin: 12px 0 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    button{ padding:10px 14px; border-radius:10px; border:2px solid rgba(255,255,255,.35); background:rgba(255,255,255,.08); color:#fff; cursor:pointer; font-weight:700; transition: background .15s ease, transform .06s ease; }
+    body{
+      background:var(--bg); color:var(--fg);
+      font-family:"Nunito Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      padding: clamp(12px,4vw,28px);
+    }
+    .wrap{ max-width:1000px; margin:0 auto; }
+    h1{ margin:0 0 12px; font-weight:800; font-size:clamp(22px,5vw,36px); text-wrap:balance; }
+    .controls{ margin:12px 0 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    button{
+      padding:10px 14px; border-radius:10px; border:2px solid rgba(255,255,255,.35);
+      background:var(--card); color:#fff; cursor:pointer; font-weight:700;
+      transition: background .15s ease, transform .06s ease;
+    }
     button:hover{ background:rgba(255,255,255,.14); }
     button:active{ transform: translateY(1px); }
     .danger{ border-color: rgba(255,200,200,.85); }
 
-    .table-wrap{ width:100%; border-radius:14px; margin-bottom:14px; background: rgba(255,255,255,.08); box-shadow: 0 8px 24px rgba(0,0,0,.18); overflow:hidden; }
-    table{ width:100%; border-collapse: collapse; table-layout: fixed; font-size: clamp(13px, 3.8vw, 16px); }
-    th,td{ padding: clamp(8px,3.2vw,14px) clamp(10px,3.5vw,16px); border-bottom:1px solid rgba(255,255,255,.25); text-align:left; white-space: normal; word-break: break-word; }
-    th{ background: rgba(255,255,255,.12); font-weight:800; }
+    .table-wrap{
+      width:100%; border-radius:14px; margin-bottom:14px; background: var(--card);
+      box-shadow: 0 8px 24px rgba(0,0,0,.18); overflow:auto;
+    }
+    table{ width:100%; border-collapse:collapse; table-layout: fixed; font-size: clamp(13px,3.6vw,16px); min-width:560px; }
+    th,td{ padding: clamp(8px,3.2vw,14px) clamp(10px,3.5vw,16px); border-bottom:1px solid var(--line); text-align:left; white-space: normal; word-break: break-word; }
+    th{ background: rgba(255,255,255,.12); font-weight:800; position:sticky; top:0; }
     tr:last-child td{ border-bottom:none; }
 
-    .panel{ max-width:720px; margin: 0 auto; text-align:center; }
+    .panel{ max-width:720px; margin:0 auto; text-align:center; }
     .error-box{ background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.35); padding:16px; border-radius:10px; margin-top:12px; white-space:pre-wrap; text-align:left; }
 
     .status{ position:fixed; right:12px; bottom:12px; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff; }
+    .muted{ opacity:.9; font-size:clamp(12px,3.5vw,14px); }
   </style>
 </head>
 <body>
@@ -39,11 +50,17 @@
       <button id="refreshBtn">Oppdater nå</button>
       <button id="exportBtn">Eksporter CSV</button>
       <button id="resetBtn" class="danger">Nullstill data</button>
+      <span id="updatedAt" class="muted">—</span>
     </div>
 
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Metrikk</th><th>Antall</th></tr></thead>
+        <thead>
+          <tr>
+            <th style="width:60%">Metrikk</th>
+            <th style="width:40%">Antall</th>
+          </tr>
+        </thead>
         <tbody>
           <tr><td>Unike besøk</td><td id="uniq">…</td></tr>
           <tr><td>Telefon</td><td id="phone">…</td></tr>
@@ -55,13 +72,11 @@
         </tbody>
       </table>
     </div>
-
-    <p id="updatedAt" style="opacity:.9;font-size:clamp(12px,3.5vw,14px)">—</p>
   </div>
 
   <div id="forbidden" class="panel" hidden>
     <h2>Mangler tilgang</h2>
-    <p>Legg til <code>?key=DIN_HEMMELIGE_NØKKEL</code> i URL.</p>
+    <p>Oppgi admin-nøkkel i URL som <code>?key=&lt;din_nøkkel&gt;</code>, eller last siden på nytt for å skrive den inn.</p>
   </div>
 
   <div id="error" class="panel" hidden>
@@ -74,43 +89,64 @@
 
   <script>
     // === Edge Function (admin) ===
-    const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co"; // injiseres
+    const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co"; // injiseres av Actions
     const ADMIN_URL = FN_BASE + "/admin";
-    const EXPECTED_ADMIN_KEY = "__EXPECTED_ADMIN_KEY__";             // injiseres
 
+    // Nøkkel-håndtering: URL ?key=, ellers prompt, lagres i sessionStorage
+    function getAdminKey(){
+      const fromUrl = new URLSearchParams(location.search).get("key");
+      if (fromUrl) { sessionStorage.setItem("admin_key", fromUrl); return fromUrl; }
+      const existing = sessionStorage.getItem("admin_key");
+      if (existing) return existing;
+      const typed = prompt("Skriv admin-nøkkelen:");
+      if (typed) sessionStorage.setItem("admin_key", typed);
+      return typed || "";
+    }
+    let ADMIN_KEY = getAdminKey();
+
+    // UI-hjelpere
     const $ = (sel) => document.querySelector(sel);
     function show(id, on=true){ document.getElementById(id).hidden = !on; }
     function setStatus(msg){ document.getElementById('status').textContent = msg; }
     function setUpdated(ts){ document.getElementById('updatedAt').textContent = 'Sist oppdatert: ' + ts; }
+    function handleAuthError(){
+      show('app', false); show('error', false); show('forbidden', true);
+    }
     function showError(err){
       show('app', false); show('forbidden', false); show('error', true);
       document.getElementById('errorDetails').textContent = (typeof err === 'string') ? err : (err?.message || JSON.stringify(err, null, 2));
     }
 
     async function callAdmin(op){
+      if (!ADMIN_KEY) { handleAuthError(); throw new Error("Mangler admin-nøkkel"); }
       const r = await fetch(ADMIN_URL, {
         method: "POST",
-        headers: { "Content-Type":"application/json", "x-admin-key": EXPECTED_ADMIN_KEY },
+        headers: {
+          "Content-Type":"application/json",
+          "x-admin-key": ADMIN_KEY
+        },
         body: JSON.stringify({ op })
       });
+      if (r.status === 401) { handleAuthError(); throw new Error("Unauthorized"); }
       if (!r.ok) throw new Error(await r.text());
       return r.json();
     }
 
     (async function boot(){
       try{
-        const key = new URLSearchParams(location.search).get("key") || "";
-        if (key !== EXPECTED_ADMIN_KEY) { show('forbidden', true); return; }
+        if (!ADMIN_KEY) { handleAuthError(); return; }
 
         setStatus('Tester forbindelse…');
-        await callAdmin('ping'); // rask sanity-sjekk
+        await callAdmin('ping'); // sanity-sjekk
+
         show('app', true);
 
         async function fetchCounts(){
           try{
             setStatus('Henter…');
             const { visitors, events } = await callAdmin('counts');
-            const uniqCount = visitors?.length || 0;
+
+            const uniqCount = Array.isArray(visitors) ? visitors.length : 0;
 
             const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0 };
             const CLICK = new Set(['phone','email','email_link','download','fb_share']);
@@ -159,7 +195,7 @@
           if (!ok) return;
           try{
             setStatus('Nullstiller…');
-            const res = await callAdmin('reset'); // returnerer {deletedEvents, deletedVisitors}
+            const res = await callAdmin('reset'); // { ok, deletedEvents, deletedVisitors }
             const total = (res?.deletedEvents||0) + (res?.deletedVisitors||0);
             setStatus(total === 0 ? 'Ingen data for denne kampanjen' : `Nullstilt ✓ (slettet ${total})`);
             await fetchCounts();
@@ -170,6 +206,7 @@
         document.getElementById('exportBtn').addEventListener('click', exportCSV);
         document.getElementById('resetBtn').addEventListener('click', resetAll);
 
+        // Første last + auto-oppdatering
         fetchCounts();
         setInterval(fetchCounts, 10000);
       }catch(err){ console.error(err); showError(err); }
