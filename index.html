@@ -9,93 +9,91 @@
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    :root {
+    :root{
       --bg:#01A0C6; --fg:#fff;
       --btn-bg: rgba(255,255,255,.08);
       --btn-bg-hover: rgba(255,255,255,.14);
       --btn-border: rgba(255,255,255,.35);
       --btn-border-strong: rgba(255,255,255,.85); /* e-post-knappen */
-      --card-bg: #ffffff;
-      --card-text: #0b3a4a;
-      --shadow: 0 8px 24px rgba(0,0,0,.18);
     }
     * { box-sizing: border-box; }
-    html,body { height:100%; margin:0; }
-    body {
+    html,body{ height:100%; margin:0; }
+    body{
       background:var(--bg); color:var(--fg);
       font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      display:grid; place-items:center; padding: clamp(12px, 3vw, 28px);
+      display:block; /* sikrer normal flow på mobil */
+      padding: clamp(12px, 4vw, 28px);
     }
-    .wrap { width:min(720px, 96vw); }
-
-    h1 {
+    .wrap{
+      max-width: 760px;
+      margin: 0 auto; /* midtstiller innholdet: lik marg på begge sider */
+    }
+    h1{
       text-align:center;
       font-weight:800;
-      font-size: clamp(26px, 4.5vw, 40px);
-      margin: 0 0 14px;
+      font-size: clamp(26px, 6vw, 40px);
+      margin: 0 0 12px;
     }
+    /* Sexy salgstekst direkte på bakgrunn (uten kort) */
+    .lead{
+      text-align:center;
+      margin: 0 auto 18px;
+      max-width: 740px;
+      line-height: 1.5;
+      font-size: clamp(15px, 4.2vw, 18px);
+      font-weight: 700;
+      letter-spacing: .2px;
+      text-wrap: balance;
+    }
+    .lead strong{ font-weight: 800; }
+    .lead .em { font-weight: 800; }
 
-    /* Selling card – tydelig forskjellig fra knappene */
-    .lead {
-      background: var(--card-bg);
-      color: var(--card-text);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: clamp(14px, 3vw, 20px);
-      margin: 0 0 16px;
-    }
-    .lead h2 {
-      margin: 0 0 6px;
-      font-size: clamp(18px, 3.5vw, 22px);
-      font-weight: 800;
-    }
-    .lead p {
-      margin: 0;
-      line-height: 1.55;
-      font-size: clamp(14px, 3.2vw, 16px);
-    }
-
-    /* Ens «ramme» for like brede knapper */
-    .btns {
+    /* Ens container for like brede knapper, midtstilt */
+    .btns{
       width: 100%;
-      max-width: 720px;
+      max-width: 740px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-
-    a.button, button.button {
-      display: block;
+    a.button, button.button{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
       width: 100%;
-      text-align: center;
-      padding: clamp(12px, 2.6vw, 16px);
+      padding: clamp(12px, 3.6vw, 16px);
       border-radius: 12px;
       border: 2px solid var(--btn-border);
       background: var(--btn-bg);
       color:#fff;
-      text-decoration: none;
-      font-size: clamp(16px, 3.6vw, 18px);
-      font-weight: 700;
+      text-decoration:none;
+      font-size: clamp(16px, 4.2vw, 18px);
+      font-weight: 800;
       line-height: 1.25;
-      cursor: pointer;
+      cursor:pointer;
       transition: background .15s ease, border-color .15s ease, transform .06s ease;
+      text-align:center;
     }
-    a.button:hover, button.button:hover { background: var(--btn-bg-hover); }
-    a.button:active, button.button:active { transform: translateY(1px); }
+    a.button:hover, button.button:hover{ background: var(--btn-bg-hover); }
+    a.button:active, button.button:active{ transform: translateY(1px); }
+    .email-btn{ border-color: var(--btn-border-strong); }
 
-    /* E-post-knappen: bare sterkere farge på kant (samme tykkelse) */
-    .email-btn { border-color: var(--btn-border-strong); }
+    /* SVG-ikon i knappene */
+    .btn-icon{
+      width: 1.2em; height: 1.2em; display:inline-block;
+    }
 
-    .hint {
+    .hint{
       opacity:.95;
-      font-size: clamp(12px, 3.2vw, 14px);
+      font-size: clamp(12px, 3.8vw, 14px);
       margin: 6px 2px 12px;
-      text-align: center;
+      text-align:center;
     }
-    .inline-email a { color:#fff; font-weight:800; text-decoration: underline; }
+    .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
 
-    .status {
+    .status{
       position:fixed; right:12px; bottom:12px;
       background:rgba(0,0,0,.25); padding:6px 10px;
       border-radius:8px; font-size:12px;
@@ -106,22 +104,46 @@
   <div class="wrap">
     <h1>Kontakt</h1>
 
-    <div class="lead">
-      <h2>Slik kontakter du oss</h2>
-      <p>Velg det som passer best: ring i åpningstiden for rask hjelp, bruk knappen for ferdig utfylt e-post – eller send fra ditt eget e-postprogram når det passer deg.</p>
-    </div>
+    <!-- Ny “sexy” salgstekst med emojis, uten hvitt kort -->
+    <p class="lead">
+      😞 Det er kjedelig når veganske produkter forsvinner fra markedet. Nok et produkt er borte fra butikkhyllene.
+      <br><span class="em">Hjelp oss å få <strong>Gryr skivet ost</strong> tilbake!</span> 💪
+      <br>Ring ☎️, send e-post 📧 og last ned QR-kode til denne siden som låseskjerm 🔒 – be alle du kjenner om å gjøre det samme.
+      Del også linken til denne siden på Facebook 👍.
+    </p>
 
     <div class="btns">
-      <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
+      <a id="telLink" class="button" href="tel:+4751371606">
+        <!-- Telefon-ikon -->
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 3.9 2 2 0 0 1 4.11 2h2a2 2 0 0 1 2 1.72c.13.98.36 1.93.68 2.83a2 2 0 0 1-.45 2.11L7.1 9.91a16 16 0 0 0 6 6l1.25-1.25a2 2 0 0 1 2.11-.45c.9.32 1.85.55 2.83.68A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Ring: +47 51 37 16 06
+      </a>
       <p class="hint">man - fre, 09 - 13</p>
 
-      <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">Send e-post</a>
+      <a id="mailLink" class="button email-btn" href="mailto:forbruker@tine.no?subject=Hei">
+        <!-- Mail-ikon -->
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/>
+          <path d="m22 6-10 7L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Send e-post
+      </a>
       <p class="hint inline-email">
         Trykk på knappen for ferdig e-post, eller send din egen til
         <a id="mailTextLink" href="mailto:forbruker@tine.no">forbruker@tine.no</a>
       </p>
 
-      <button id="qrBtn" class="button">Last ned skjermlåsbilde med QR-kode</button>
+      <button id="qrBtn" class="button">
+        <!-- Download/QR-ikon -->
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Last ned skjermlåsbilde med QR-kode
+      </button>
       <p class="hint">QR-koden peker til denne siden.</p>
     </div>
   </div>
