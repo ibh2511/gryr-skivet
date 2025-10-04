@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <link rel="icon" href="img/megafon.svg" type="image/svg+xml">
   <title>Få Gryr skivet ost tilbake – kontakt & del</title>
 
   <meta name="description" content="🌱 Hjelp oss å få Gryr skivet ost tilbake i butikkhyllene. Ring, send e-post, last ned QR til låseskjerm - og del siden videre!">
@@ -36,160 +35,135 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-  <style>
-  :root{
-    --bg:#01A0C6; --fg:#fff;
-    --accent:#F4D31F;
-    --btn-bg: rgba(255,255,255,.08);
-    --btn-bg-hover: rgba(255,255,255,.14);
-    --btn-border: rgba(255,255,255,.35);     
-    --btn-border-strong: rgba(255,255,255,.85);
-  }
-  *{ box-sizing:border-box; }
+  <link rel="icon" href="img/megafon.svg?v=2" type="image/svg+xml" sizes="any">
 
-  html,body{ margin:0; min-height:100vh; }
 
-  body{
-    display:flex; flex-direction:column;
-    background:var(--bg); color:var(--fg);
-    font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    padding: clamp(12px,4vw,28px);
-    padding-bottom: 0;                  
-    overflow-x: hidden;                
-  }
-
-  .wrap{ flex:1 0 auto; max-width:760px; margin:0 auto; }
-
-  h1{ text-align:center; font-weight:800; font-size:clamp(26px,6vw,40px); margin:0 0 12px; letter-spacing:.2px; }
-
-  .lead{
-    text-align:left; margin:0 auto 18px; max-width:740px;
-    line-height:1.6; font-size:clamp(15px,4.2vw,18px); font-weight:700; letter-spacing:.2px;
-    text-wrap:balance;
-  }
-  .brand{ color:var(--accent); font-weight:800; letter-spacing:.4px; }
-
-  .btns{ width:100%; max-width:740px; margin:0 auto 18px; display:flex; flex-direction:column; gap:10px; }
-  a.button, button.button{
-    display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
-    padding:clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
-    background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
-    font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
-    transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
-  }
-  a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
-  a.button:active, button.button:active{ transform:translateY(1px); }
-  .email-btn{ border-color:var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
-  @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
-  .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
-
-  .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
-  .inline-email a{ color:#fff; font-weight:800; text-decoration:underline; }
-
-  /* FOOTER */
-  :root{
-    --wave-h: 300px;   
-    --wave-pos: 0.83;  
-  }
-  
-  footer{
-    margin-top:auto;
-    position:relative;
-  
-    left:50%;
-    right:50%;
-    margin-left:-50vw;
-    margin-right:-50vw;
-    width:100vw;
-  
-    padding:0;
-    background:transparent;
-  }
-  
-  .footer-wave{
-    position:relative;
-    width:100%;
-    height:var(--wave-h);
-    overflow:hidden;
-  }
-  
-  .wave-svg{
-    position:absolute; inset:0;
-    width:100%; height:100%;
-    display:block;
-    pointer-events:none;
-  }
-  
-  .wave-svg path,
-  .wave-svg rect{ fill: var(--btn-border); }
-  
-  .fb-share.on-wave{
-    position:absolute;
-    left:50%;
-    top: calc(var(--wave-h) * var(--wave-pos)); /* styr pos pr. høyde */
-    transform: translate(-50%, -50%);
-    display:inline-flex; align-items:center; gap:8px;
-    color:#fff; font-weight:800; text-decoration:underline;
-    z-index:2;
-    padding:6px 10px; 
-  }
-  
-  .fb-share.on-wave:hover{ opacity:1; }
-  .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
-  
-  @media (max-width: 480px){
+   <style>
     :root{
-      --wave-h: 150px;
-      --wave-pos: 0.80;
+      --bg:#01A0C6; --fg:#fff;
+      --accent:#F4D31F;
+      --btn-bg: rgba(255,255,255,.08);
+      --btn-bg-hover: rgba(255,255,255,.14);
+      --btn-border: rgba(255,255,255,.35);
+      --btn-border-strong: rgba(255,255,255,.85);
+      --footer-bg: rgba(255,255,255,.35); /* lys blå footer (samme som knappekant) */
+      --pad: clamp(12px,4vw,28px);
     }
-    .lead{
-      text-align:left;
-    }
-  }
-  @media (max-width: 360px){
-    :root{
-      --wave-h: 130px;
-      --wave-pos: 0.75;
-    }
-    .lead{
-      text-align:left;
-    }    
-  }
-
+    *{ box-sizing:border-box; }
   
-  /* Status-bubble */
-  .status{ position:fixed; right:12px; bottom:12px; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff; }
+    html,body{ margin:0; min-height:100vh; }
+  
+    body{
+      display:flex; flex-direction:column;
+      background:var(--bg); color:var(--fg);
+      font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      padding: var(--pad);
+      padding-bottom: 0;                 /* ingen glippe nederst */
+      overflow-x: hidden;
+    }
+  
+    .wrap{ flex:1 0 auto; max-width:960px; margin:0 auto; }
+  
+    h1{ text-align:center; font-weight:800; font-size:clamp(26px,6vw,40px); margin:0 0 12px; letter-spacing:.2px; }
+  
+    /* HERO: bilde til høyre på desktop, mellom h1 og lead på mobil */
+    .hero{ display:grid; grid-template-columns: 1fr minmax(220px, 320px); gap:16px; align-items:start; }
+    .hero-img{
+      width:100%; height:auto; max-height:460px; object-fit:contain; border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.18);
+      justify-self:end;
+    }
+  
+    .lead{
+      margin: 0 0 18px;
+      line-height: 1.6; font-size: clamp(15px, 4.2vw, 18px); font-weight: 700; letter-spacing:.2px;
+      text-wrap: balance;
+    }
+    .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
+  
+    .btns{ width:100%; max-width:740px; margin:0 auto 18px; display:flex; flex-direction:column; gap:10px; }
+    a.button, button.button{
+      display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+      padding:clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
+      background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
+      font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
+      transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
+    }
+    a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
+    a.button:active, button.button:active{ transform:translateY(1px); }
+    .email-btn{ border-color: var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
+    @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
+    .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
+  
+    .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
+    .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
+  
+    /* FOOTER – lys blå, full-bleed, STICKY nederst */
+    footer{
+      position: sticky; bottom:0; z-index: 10;
+      /* full-bleed: overlapp body-padding på sider */
+      left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw;
+      background: var(--footer-bg);
+      backdrop-filter: saturate(120%) blur(0px);
+    }
+    .footer-inner{
+      max-width:960px; margin:0 auto; padding:14px var(--pad);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .fb-share{
+      display:inline-flex; align-items:center; gap:8px;
+      color:#00324a; /* litt mørkere for kontrast på lys footer */
+      font-weight:800; text-decoration: underline;
+    }
+    .fb-share:hover{ opacity:.95; }
+    .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
+  
+    /* MOBIL-tilpasninger */
+    @media (max-width: 768px){
+      .hero{ display:block; }
+      .hero-img{
+        max-width: min(70%, 380px);
+        margin: 10px auto 10px; display:block;
+      }
+      .lead{ text-align:center; } /* midtstill lead på mobil */
+    }
+  
+    /* Status-bubble */
+    .status{ position:fixed; right:12px; bottom:12px; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff; }
+  </style>
 
-  @media (max-width:360px){
-    .btn-icon,.fb-icon{ width:1.1em; height:1.1em; }
-    .fb-share.on-wave{ top:40%; }
-  }
-</style>
 </head>
 <body>
   <div class="wrap">
     <h1 class="brand">GRYR® SKIVET</h1>
 
-    <p class="lead">
-      😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
-      Nok et produkt er borte fra butikkhyllene.<br><br>
-      <span class="brand">GRYR® SKIVET</span> ost må tilbake! <br><br>
-      Ring, send e-post, last ned QR-kode til låseskjerm - og del siden videre 📢 <br><br>
-      Del også linken til denne siden på Facebook 👍<br><br>
-    </p>
+    <div class="hero">
+      <div>
+        <h1 class="brand">GRYR® SKIVET</h1>
+        <p class="lead">
+          😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
+          <span class="brand">GRYR® SKIVET</span> må tilbake!<br><br>
+          Ring, send e-post, last ned QR-kode til låseskjerm – og del siden videre 📢
+        </p>
+      </div>
+    
+      <img
+        class="hero-img"
+        src="img/gryr-skivet.png"
+        width="617" height="838"
+        alt="GRYR® SKIVET – produktbilde">
+    </div>
+
 
     <div class="btns">
       <a id="telLink" class="button" href="tel:+4751371606">Ring: +47 51 37 16 06</a>
       <p class="hint">man - fre, kl 09 - 13</p>
-      <a id="mailLink" class="button email-btn"
-         href="mailto:forbruker@tine.no?subject=🌱 GRYR® SKIVET tilbake?&body=Hei Tine,
-      
-      😞 Det er kjedelig når bra produkter forsvinner fra butikkene. Jeg håper dere revurderer og setter GRYR® SKIVET ost i produksjon igjen, så den kommer tilbake – vi er mange som savner den.
-      
-      Vennlig hilsen
-      [ DITT_NAVN ] ❓">
+      <a
+        id="mailLink"
+        class="button email-btn"
+        href="mailto:forbruker@tine.no?subject=%F0%9F%8C%B1%20GRYR%C2%AE%20SKIVET%20tilbake%3F&body=Hei%20Tine%2C%0A%0A%F0%9F%98%9E%20Det%20er%20kjedelig%20n%C3%A5r%20bra%20produkter%20forsvinner%20fra%20butikkene.%0AJeg%20h%C3%A5per%20dere%20revurderer%20og%20setter%20GRYR%C2%AE%20SKIVET%20i%20produksjon%20igjen%2C%0As%C3%A5%20den%20kommer%20tilbake%20%E2%80%93%20vi%20er%20mange%20som%20savner%20den.%0A%0AVennlig%20hilsen%0A%5B%20DITT_NAVN%20%5D">
         Send e-post
-      </a>      
+      </a>
       <p class="hint inline-email">
         Trykk på knappen for ferdig e-post, eller send din egen til
         <a id="mailTextLink" href="mailto:forbruker@tine.no">forbruker@tine.no</a>
@@ -200,29 +174,17 @@
     </div>
   </div>
 
-<footer>
-  <div class="footer-wave">
-    <svg class="wave-svg" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0,80 
-               Q90,120 180,80 
-               T360,80 T540,80 T720,80 
-               T900,80 T1080,80 T1260,80 T1440,80 
-               V160 H0 Z"/>
-    </svg>
+  <footer>
+    <div class="footer-inner">
+      <a id="fbShare" class="fb-share" href="#" rel="noopener">
+        <svg class="fb-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M22 12.07C22 6.48 17.52 2 11.93 2 6.35 2 1.86 6.48 1.86 12.07c0 4.93 3.6 9.02 8.31 9.9v-7H7.9v-2.9h2.27V9.41c0-2.24 1.33-3.48 3.37-3.48.98 0 2 .18 2 .18v2.2h-1.13c-1.12 0-1.47.69-1.47 1.39v1.67h2.5l-.4 2.9h-2.1v7C18.4 21.09 22 17 22 12.07z"/>
+        </svg>
+        Del på Facebook
+      </a>
+    </div>
+  </footer>
 
-    <a id="fbShare" class="fb-share on-wave" href="#" rel="noopener">
-      <svg class="fb-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M22 12.07C22 6.48 17.52 2 11.93 2 
-                 6.35 2 1.86 6.48 1.86 12.07
-                 c0 4.93 3.6 9.02 8.31 9.9v-7H7.9v-2.9h2.27V9.41
-                 c0-2.24 1.33-3.48 3.37-3.48.98 0 2 .18 2 .18v2.2h-1.13
-                 c-1.12 0-1.47.69-1.47 1.39v1.67h2.5l-.4 2.9h-2.1v7
-                 C18.4 21.09 22 17 22 12.07z"/>
-      </svg>
-      Del på Facebook
-    </a>
-  </div>
-</footer>
 
 
   <div class="status" id="status">kobler…</div>
@@ -276,40 +238,40 @@
       }
     }
   
-    // ======== Canonical URL for deling (pen URL uten hash/query) ========
+    // Ren, pen URL for deling
     const CANONICAL =
       document.querySelector('link[rel="canonical"]')?.href
       || (location.origin + location.pathname);
-  
-    // ======== Deling: native share (mobil) eller Facebook sharer (desktop) ========
+    
+    // Deling: mobil bruker Share API; desktop navigerer (ingen popup), logger med sendBeacon
     async function shareOrOpenFacebook(){
       try {
         if (navigator.share) {
-          // MOBIL
           await navigator.share({
             title: document.querySelector('meta[property="og:title"]')?.content || document.title,
             text: document.querySelector('meta[property="og:description"]')?.content || '',
             url: CANONICAL
           });
-          logEvent('fb_share'); // tolk vellykket native share som "fb_share"
-        } else {
-          // DESKTOP
-          const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
-          const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
-          if (!w || w.closed || typeof w.closed === 'undefined') {
-            setStatus('Tillat pop-ups for å dele på Facebook.');
-            return;
-          }
-          // logg umiddelbart når vinduet faktisk ble åpnet:
           logEvent('fb_share');
-          // valgfri backup-logging (rate-limit stopper duplisering uansett):
-          setTimeout(() => logEvent('fb_share'), 500);
+        } else {
+          // Desktop: logg "fb_share" så godt som mulig før navigasjon
+          const payload = JSON.stringify({ visitor_id: getVisitorId(), event_type: 'fb_share' });
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon(LOG_URL, new Blob([payload], { type:'application/json' }));
+          } else {
+            // fallback (fire-and-forget)
+            fetch(LOG_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: payload }).catch(()=>{});
+          }
+          // Deretter navigér samme fane (unngår popup-blokkere)
+          const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
+          location.href = shareUrl;
         }
       } catch (err) {
         console.error(err);
         setStatus('Deling avbrutt.');
       }
     }
+
   
     // ======== Boot ========
     (async () => {
