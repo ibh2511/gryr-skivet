@@ -38,139 +38,154 @@
   <link rel="icon" href="img/megafon.svg?v=2" type="image/svg+xml" sizes="any">
 
 
-   <style>
-    :root{
-      --bg:#01A0C6; --fg:#fff;
-      --accent:#F4D31F;
-      --btn-bg: rgba(255,255,255,.08);
-      --btn-bg-hover: rgba(255,255,255,.14);
-      --btn-border: rgba(255,255,255,.35);
-      --btn-border-strong: rgba(255,255,255,.85);
-      --footer-bg: rgba(255,255,255,.35); /* lys blå footer (samme som knappekant) */
-      --pad: clamp(12px,4vw,28px);
-    }
-    *{ box-sizing:border-box; }
-  
-    html,body{ margin:0; min-height:100vh; }
-  
-    body{
-      display:flex; flex-direction:column;
-      background:var(--bg); color:var(--fg);
-      font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      padding: var(--pad);
-      padding-bottom: 0;                 /* ingen glippe nederst */
-      overflow-x: hidden;
-    }
-  
-    .wrap{ flex:1 0 auto; max-width:960px; margin:0 auto; }
-  
-    h1{ text-align:center; font-weight:800; font-size:clamp(26px,6vw,40px); margin:0 0 12px; letter-spacing:.2px; }
-    /* h1 i brand-gul (samme som .lead .brand) */
-    h1.brand{ color: var(--accent); }
-  
-    /* HERO: desktop = bilde til høyre, mobil = bilde mellom h1 og lead (styres av HTML-rekkefølgen) */
+  <style>
+  :root{
+    --bg:#01A0C6; --fg:#fff;
+    --accent:#F4D31F;
+    --btn-bg: rgba(255,255,255,.08);
+    --btn-bg-hover: rgba(255,255,255,.14);
+    --btn-border: rgba(255,255,255,.35);
+    --btn-border-strong: rgba(255,255,255,.85);
+    --footer-bg: rgba(255,255,255,.35); /* lys blå footer */
+    --pad: clamp(12px,4vw,28px);
+    --footer-h: 60px;                  /* fast høyde på sticky footer */
+    --content-max: 740px;              /* samme bredde som knappeseksjonen */
+  }
+  *{ box-sizing:border-box; }
+
+  html,body{ margin:0; min-height:100vh; }
+
+  body{
+    display:flex; flex-direction:column;
+    background:var(--bg); color:var(--fg);
+    font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding: var(--pad);
+    padding-bottom: var(--footer-h);   /* gjør plass for fast footer */
+    overflow-x: hidden;
+  }
+
+  .wrap{ flex:1 0 auto; max-width:960px; margin:0 auto; }
+
+  h1{ text-align:center; font-weight:800; font-size:clamp(26px,6vw,40px); margin:0 0 12px; letter-spacing:.2px; }
+  /* h1 i brand-gul */
+  h1.brand{ color: var(--accent); }
+
+  /* HERO – skal ikke overstige knappebredden */
+  .hero{
+    max-width: var(--content-max);
+    margin: 0 auto 18px;
+  }
+
+  /* desktop: lead og bilde side-ved-side (innenfor content-max) */
+  @media (min-width: 860px){
     .hero{
       display:grid;
-      grid-template-columns: 1fr minmax(220px, 320px);
+      grid-template-columns: 1fr 1fr;
       gap:16px;
       align-items:start;
     }
-    .hero-img{
-      width:100%;
-      height:auto;
-      max-height:460px;
-      object-fit:contain;
-      border-radius:12px;
-      box-shadow:0 8px 24px rgba(0,0,0,.18);
-      justify-self:end;
-    }
-  
-    .lead{
-      margin: 0 0 18px;
-      line-height: 1.6;
-      font-size: clamp(15px, 4.2vw, 18px);
-      font-weight: 700;
-      letter-spacing:.2px;
-      text-wrap: balance;
-    }
-    .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
-  
-    .btns{ width:100%; max-width:740px; margin:0 auto 18px; display:flex; flex-direction:column; gap:10px; }
-    a.button, button.button{
-      display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
-      padding:clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
-      background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
-      font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
-      transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
-    }
-    a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
-    a.button:active, button.button:active{ transform:translateY(1px); }
-    .email-btn{ border-color: var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
-    @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
-    .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
-  
-    .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
-    .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
-  
-    /* FOOTER – lys blå, full-bleed, STICKY nederst */
-    footer{
-      position: sticky; bottom:0; z-index: 10;
-      /* full-bleed: overlapp body-padding på sider */
-      left:50%; right:50%;
-      margin-left:-50vw; margin-right:-50vw;
-      width:100vw;
-      background: var(--footer-bg);
-      backdrop-filter: saturate(120%) blur(0px);
-    }
-    .footer-inner{
-      max-width:960px; margin:0 auto; padding:14px var(--pad);
-      display:flex; align-items:center; justify-content:center;
-    }
-    .fb-share{
-      display:inline-flex; align-items:center; gap:8px;
-      color:#fff; /* hvit tekst i footeren */
-      font-weight:800; text-decoration: underline;
-    }
-    .fb-share:hover{ opacity:.95; }
-    .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
-  
-    /* MOBIL-tilpasninger */
-    @media (max-width: 768px){
-      .hero{
-        display:block;  /* gjør at elementene følger HTML-rekkefølgen: H1 → IMG → LEAD */
-      }
-      .hero-img{
-        max-width: clamp(140px, 40vw, 220px); /* mye mindre på mobil */
-        height:auto;
-        margin: 2px auto 10px; display:block;
-      }
-      .lead{ text-align:center; } /* midtstill lead på mobil */
-    }
-  
-    /* Status-bubble */
-    .status{ position:fixed; right:12px; bottom:12px; background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff; }
-  </style>
+    .hero .lead{ grid-column: 1; }
+    .hero .hero-img{ grid-column: 2; justify-self:end; }
+  }
+
+  /* bilde – behagelig størrelse, kan krympes ved behov */
+  .hero-img{
+    width:100%;
+    height:auto;
+    max-width: 320px;       /* hard cap for å holde totalbredden pen */
+    max-height: 420px;
+    object-fit: contain;
+    border-radius:12px;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+    margin: 8px auto;       /* på mobil havner bildet mellom h1 og lead */
+    display:block;
+  }
+
+  .lead{
+    margin: 0 0 18px;
+    line-height: 1.6;
+    font-size: clamp(15px, 4.2vw, 18px);
+    font-weight: 700;
+    letter-spacing:.2px;
+    text-wrap: balance;
+  }
+  .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
+
+  .btns{
+    width:100%;
+    max-width: var(--content-max);
+    margin:0 auto 18px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  a.button, button.button{
+    display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+    padding:clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
+    background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
+    font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
+    transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
+  }
+  a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
+  a.button:active, button.button:active{ transform:translateY(1px); }
+  .email-btn{ border-color: var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
+  @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
+  .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
+
+  .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
+  .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
+
+  /* FOOTER – fast til bunnen, full bredde (desktop + mobil) */
+  footer{
+    position: fixed;
+    left:0; right:0; bottom:0;
+    height: var(--footer-h);
+    background: var(--footer-bg);
+    z-index: 10;
+  }
+  .footer-inner{
+    max-width:960px; height:100%;
+    margin:0 auto; padding:0 var(--pad);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .fb-share{
+    display:inline-flex; align-items:center; gap:8px;
+    color:#fff;                      /* hvit tekst som før */
+    font-weight:800; text-decoration: underline;
+  }
+  .fb-share:hover{ opacity:.95; }
+  .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
+
+  /* MOBIL – lead midtstilles (bildet og teksten så ut bra fra før) */
+  @media (max-width: 768px){
+    .lead{ text-align:center; }
+  }
+
+  /* Status-bubble */
+  .status{
+    position:fixed; right:12px; bottom: calc(var(--footer-h) + 12px);
+    background:rgba(0,0,0,.25); padding:6px 10px; border-radius:8px; font-size:12px; color:#fff;
+  }
+</style>
+
 
 </head>
 <body>
   <div class="wrap">
+  <div class="hero">
     <h1 class="brand">GRYR® SKIVET</h1>
-
-   <div class="hero">
-      <h1 class="brand">GRYR® SKIVET</h1>
-    
-      <img
-        class="hero-img"
-        src="img/gryr-skivet.png"
-        width="617" height="838"
-        alt="GRYR® SKIVET – produktbilde">
-    
-      <p class="lead">
-        😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
-        <span class="brand">GRYR® SKIVET</span> må tilbake!<br><br>
-        Ring, send e-post, last ned QR-kode til låseskjerm – og del siden videre 📢
-      </p>
-    </div>
+  
+    <img
+      class="hero-img"
+      src="img/gryr-skivet.png"
+      width="617" height="838"
+      alt="GRYR® SKIVET – produktbilde">
+  
+    <p class="lead">
+      😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
+      Nok et produkt er borte fra butikkhyllene.<br><br>
+      <span class="brand">GRYR® SKIVET</span> ost må tilbake! <br><br>
+      Ring, send e-post, last ned QR-kode til låseskjerm - og del siden videre 📢 <br><br>
+    </p>
+  </div>
 
 
     <div class="btns">
@@ -240,21 +255,45 @@
       return id;
     }
   
-    // ======== Logging til Edge Function ========
-    async function logEvent(event_type){
-      if (!canLog(event_type)) return;
+    // ======== Logging til Edge Function (med force + beacon-støtte) ========
+    async function logEvent(event_type, { force = false, beacon = false } = {}){
+      // bypass rate-limit for fb_share når force=true
+      if (!force) {
+        const COOLDOWN_MS = 1500;
+        const key = 'rl_' + event_type;
+        const now = Date.now();
+        const last = +(localStorage.getItem(key) || 0);
+        if (now - last < COOLDOWN_MS) {
+          setStatus?.(`vent ${Math.ceil((COOLDOWN_MS-(now-last))/1000)}s…`);
+          return;
+        }
+        localStorage.setItem(key, now);
+      }
+    
+      const payloadStr = JSON.stringify({ visitor_id: getVisitorId(), event_type });
+    
+      // 1) Prøv navigator.sendBeacon (robust når siden mister fokus)
+      if (beacon && navigator.sendBeacon) {
+        try {
+          const ok = navigator.sendBeacon(LOG_URL, new Blob([payloadStr], { type: 'text/plain;charset=UTF-8' }));
+          if (ok) return; // sendt – ferdig
+        } catch (e) { /* fallthrough to fetch */ }
+      }
+    
+      // 2) Fallback til fetch (keepalive for «under focus change»)
       try{
-        const r = await fetch(LOG_URL, {
+        await fetch(LOG_URL, {
           method: "POST",
           headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({ visitor_id: getVisitorId(), event_type })
+          body: payloadStr,
+          keepalive: true
         });
-        if (!r.ok) throw new Error(await r.text());
       }catch(err){
         console.error(err);
-        setStatus('feil: ' + (err?.message || 'ukjent'));
+        setStatus?.('feil: ' + (err?.message || 'ukjent'));
       }
     }
+
   
     // Ren, pen URL for deling
     const CANONICAL =
@@ -262,32 +301,37 @@
       || (location.origin + location.pathname);
     
     async function shareOrOpenFacebook(){
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: document.querySelector('meta[property="og:title"]')?.content || document.title,
-            text: document.querySelector('meta[property="og:description"]')?.content || '',
-            url: CANONICAL
-          });
-          logEvent('fb_share'); // mobil logges etter vellykket share()
-        } else {
-          const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
-          const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
-          if (!w || w.closed || typeof w.closed === 'undefined') {
-            setStatus('Tillat pop-ups for å dele på Facebook.');
-            return;
-          }
-          // Popup åpnet: logg nå
-          logEvent('fb_share');
-          // Backup 400ms senere (rate-limit stopper dobbelttelling)
-          setTimeout(() => logEvent('fb_share'), 400);
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus('Deling avbrutt.');
+    try {
+      // MOBIL
+      if (navigator.share) {
+        await navigator.share({
+          title: document.querySelector('meta[property="og:title"]')?.content || document.title,
+          text: document.querySelector('meta[property="og:description"]')?.content || '',
+          url: CANONICAL
+        });
+        // logg etter vellykket native share
+        logEvent('fb_share', { force: true, beacon: true });
+        return;
       }
+  
+      // DESKTOP: logg først (force+bacon), så popup
+      logEvent('fb_share', { force: true, beacon: true });
+  
+      const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
+      const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+      if (!w || w.closed || typeof w.closed === 'undefined') {
+        setStatus?.('Tillat pop-ups for å dele på Facebook.');
+      }
+  
+      // liten backup etter 400ms (rate-limit er bypasset, men beacon > fetch gjør at dobbeltpost er lite sannsynlig;
+      // Edge kan dedupe om ønskelig. Hvis du vil unngå helt, fjern backupen.)
+      setTimeout(() => logEvent('fb_share', { force: true }), 400);
+  
+    } catch (err) {
+      console.error(err);
+      setStatus?.('Deling avbrutt.');
     }
-
+  }
   
     // ======== Boot ========
     (async () => {
