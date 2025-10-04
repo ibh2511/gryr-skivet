@@ -342,45 +342,31 @@
       }
     }
 
-  
-    // Ren, pen URL for deling
-    const CANONICAL =
-      document.querySelector('link[rel="canonical"]')?.href
-      || (location.origin + location.pathname);
-    
     async function shareOrOpenFacebook(){
-    try {
-      // MOBIL
-      if (navigator.share) {
-        await navigator.share({
-          title: document.querySelector('meta[property="og:title"]')?.content || document.title,
-          text: document.querySelector('meta[property="og:description"]')?.content || '',
-          url: CANONICAL
-        });
-        // logg etter vellykket native share
+      const url   = document.querySelector('link[rel="canonical"]')?.href || (location.origin + location.pathname);
+      const title = document.querySelector('meta[property="og:title"]')?.content || document.title;
+      const text  = document.querySelector('meta[property="og:description"]')?.content || '';
+    
+      try {
+        if (navigator.share) {
+          await navigator.share({ title, text, url });
+          logEvent('fb_share', { force: true, beacon: true });
+          return;
+        }
+    
         logEvent('fb_share', { force: true, beacon: true });
-        return;
+        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+        const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+        if (!w || w.closed || typeof w.closed === 'undefined') {
+          setStatus?.('Tillat pop-ups for å dele på Facebook.');
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus?.('Deling avbrutt.');
       }
-  
-      // DESKTOP: logg først (force+bacon), så popup
-      logEvent('fb_share', { force: true, beacon: true });
-  
-      const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
-      const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
-      if (!w || w.closed || typeof w.closed === 'undefined') {
-        setStatus?.('Tillat pop-ups for å dele på Facebook.');
-      }
-  
-      // liten backup etter 400ms (rate-limit er bypasset, men beacon > fetch gjør at dobbeltpost er lite sannsynlig;
-      // Edge kan dedupe om ønskelig. Hvis du vil unngå helt, fjern backupen.)
-      setTimeout(() => logEvent('fb_share', { force: true }), 400);
-  
-    } catch (err) {
-      console.error(err);
-      setStatus?.('Deling avbrutt.');
     }
-  }
-  
+
+    
     // ======== Boot ========
     (async () => {
       try {
