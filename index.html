@@ -261,7 +261,6 @@
       document.querySelector('link[rel="canonical"]')?.href
       || (location.origin + location.pathname);
     
-    // Deling: mobil bruker Share API; desktop navigerer (ingen popup), logger med sendBeacon
     async function shareOrOpenFacebook(){
       try {
         if (navigator.share) {
@@ -270,19 +269,18 @@
             text: document.querySelector('meta[property="og:description"]')?.content || '',
             url: CANONICAL
           });
-          logEvent('fb_share');
+          logEvent('fb_share'); // mobil logges etter vellykket share()
         } else {
-          // Desktop: logg "fb_share" så godt som mulig før navigasjon
-          const payload = JSON.stringify({ visitor_id: getVisitorId(), event_type: 'fb_share' });
-          if (navigator.sendBeacon) {
-            navigator.sendBeacon(LOG_URL, new Blob([payload], { type:'application/json' }));
-          } else {
-            // fallback (fire-and-forget)
-            fetch(LOG_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: payload }).catch(()=>{});
-          }
-          // Deretter navigér samme fane (unngår popup-blokkere)
           const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(CANONICAL)}`;
-          location.href = shareUrl;
+          const w = window.open(shareUrl, '_blank', 'noopener,noreferrer,width=600,height=600');
+          if (!w || w.closed || typeof w.closed === 'undefined') {
+            setStatus('Tillat pop-ups for å dele på Facebook.');
+            return;
+          }
+          // Popup åpnet: logg nå
+          logEvent('fb_share');
+          // Backup 400ms senere (rate-limit stopper dobbelttelling)
+          setTimeout(() => logEvent('fb_share'), 400);
         }
       } catch (err) {
         console.error(err);
