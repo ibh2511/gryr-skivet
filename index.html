@@ -251,9 +251,7 @@
       </p>
       <!-- IAB-hint (vises i FB/IG/Messenger) -->
       <p class="hint inline-email" id="emailHintIAB" hidden>
-        Trykk på knappen for å sende e-post til
-        <input id="emailCopy" type="text" value="forbruker@tine.no" readonly
-               style="margin-left:6px; padding:6px 8px; border-radius:8px; border:1px solid rgba(255,255,255,.5); background:rgba(255,255,255,.12); color:#fff; width:220px; text-align:center; font-weight:800;">
+        Trykk på knappen for å sende e-post til forbruker@tine.no
       </p>
 
       <button id="qrBtn" class="button">Last ned skjermbilde med QR-kode</button>
@@ -413,16 +411,13 @@
       const isIAB = /FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(navigator.userAgent);
       if (!isIAB) return;
 
-      // 1) Stripp mailto (fjern subject/body)
       const mailA = document.getElementById('mailLink');
       if (mailA) mailA.setAttribute('href', 'mailto:forbruker@tine.no');
 
-      // 2) Bytt hint-paragraf
       const pOrig = document.getElementById('emailHintOrig');
       const pIab  = document.getElementById('emailHintIAB');
       if (pOrig && pIab) { pOrig.hidden = true; pIab.hidden = false; }
 
-      // 3) Gjør kopifeltet praktisk
       const copyInp = document.getElementById('emailCopy');
       if (copyInp) {
         const selectAll = () => { copyInp.focus(); copyInp.select(); };
