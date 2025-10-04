@@ -38,157 +38,156 @@
   <link rel="icon" href="img/megafon.svg?v=2" type="image/svg+xml" sizes="any">
 
 
- <style>
-  :root{
-    --bg:#01A0C6; --fg:#fff;
-    --accent:#F4D31F;
-    --btn-bg: rgba(255,255,255,.08);
-    --btn-bg-hover: rgba(255,255,255,.14);
-    --btn-border: rgba(255,255,255,.35);
-    --btn-border-strong: rgba(255,255,255,.85);
-    --footer-bg: rgba(255,255,255,.35);
-    --pad: clamp(12px,4vw,28px);
-    --footer-h: 60px;            /* fast footer-høyde */
-    --content-max: 740px;         /* samme bredde som knapper/innhold */
-  }
-  *{ box-sizing:border-box; }
-
-  html,body{ margin:0; min-height:100vh; }
-
-  body{
-    display:flex; flex-direction:column;
-    background:var(--bg); color:var(--fg);
-    font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    padding: var(--pad);
-    /* reserver plass så innhold ikke havner bak fast footer */
-    padding-bottom: calc(var(--footer-h) + 12px);
-    overflow-x: hidden;
-  }
-
-  .wrap{ flex:1 0 auto; max-width:960px; margin:0 auto; }
-
-  h1{
-    text-align:center; font-weight:800;
-    font-size:clamp(26px,6vw,40px);
-    margin:0 0 12px; letter-spacing:.2px;
-  }
-  /* h1 i brand-gul */
-  h1.brand{ color: var(--accent); }
-
-  /* HERO – mobil: blokk (H1 → IMG → LEAD) */
-  .hero{
-    max-width: var(--content-max);
-    margin: 0 auto 18px;
-  }
-
-  /* Bilde – ingen skygge */
-  .hero-img{
-    width:100%; height:auto;
-    max-width: 320px;
-    max-height: 420px;
-    object-fit: contain;
-    border-radius:12px;
-    box-shadow:none;
-    margin: 6px auto;       /* ligger mellom h1 og lead på mobil */
-    display:block;
-  }
-
-  /* Lead – luft over på mobil */
-  .lead{
-    margin: 14px 0 18px;
-    line-height: 1.6;
-    font-size: clamp(15px, 4.2vw, 18px);
-    font-weight: 700;
-    letter-spacing:.2px;
-    text-wrap: balance;
-  }
-  .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
-
-  /* Desktop: H1 på egen linje, lead + bilde side-ved-side (inline-følelse) */
-  @media (min-width: 860px){
+  <style>
+    :root{
+      --bg:#01A0C6; --fg:#fff;
+      --accent:#F4D31F;
+      --btn-bg: rgba(255,255,255,.08);
+      --btn-bg-hover: rgba(255,255,255,.14);
+      --btn-border: rgba(255,255,255,.35);
+      --btn-border-strong: rgba(255,255,255,.85);
+      --footer-bg: rgba(255,255,255,.35);
+      --pad: clamp(12px,4vw,28px);
+      --footer-h: 60px;
+      --content-max: 740px;
+    }
+    *{ box-sizing:border-box; }
+  
+    html,body{ margin:0; min-height:100vh; }
+  
+    body{
+      display:flex; flex-direction:column;
+      background:var(--bg); color:var(--fg);
+      font-family:"Nunito Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      padding: var(--pad);
+      /* reserver plass så innhold ikke havner bak fast footer */
+      padding-bottom: calc(var(--footer-h) + 12px);
+      overflow-x: hidden;
+    }
+  
+    .wrap{ flex:1 0 auto; max-width:960px; margin:0 auto; }
+  
+    h1{
+      text-align:center; font-weight:800;
+      font-size:clamp(26px,6vw,40px);
+      margin:0 0 12px; letter-spacing:.2px;
+    }
+    h1.brand{ color: var(--accent); }
+  
+    /* HERO (mobil: H1 → IMG → LEAD) */
     .hero{
-      display:flex;
-      flex-wrap:wrap;            /* lar H1 ta full bredde, så rad 2: lead+img */
-      column-gap: 18px;
-      row-gap: 10px;
-      align-items:center;        /* vertikal midtstilling av rad 2 */
+      max-width: var(--content-max);
+      margin: 0 auto 18px;
     }
-    .hero > h1{
-      flex: 0 0 100%;            /* H1 over begge */
-      margin-bottom: 6px;
+    .hero-img{
+      width:100%; height:auto;
+      max-width: 320px;
+      max-height: 420px;
+      object-fit: contain;
+      border-radius:12px;
+      box-shadow:none;             /* ingen skygge */
+      display:block;
+      margin: 6px auto 16px;       /* MER LUFT ned til lead på mobil */
     }
-    .hero > .lead{
-      flex: 1 1 0;               /* tekst fyller tilgjengelig plass */
-      margin: 0;                 /* fjern ekstra luft på desktop */
-      text-wrap: normal;         /* mindre «balanse»-knusing av linjer på desktop */
-      align-self: center;        /* sikker vertikal sentrering mot bildet */
+    .lead{
+      margin: 14px 0 18px;         /* litt luft over på mobil */
+      line-height: 1.6;
+      font-size: clamp(15px, 4.2vw, 18px);
+      font-weight: 700;
+      letter-spacing:.2px;
+      text-wrap: balance;
     }
-    .hero > .hero-img{
-      flex: 0 0 auto;            /* hold bildet smalt */
-      margin: 0;
-      max-width: 260px;          /* slankere for pen inline balanse */
-      max-height: 360px;
+    .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
+  
+    /* Desktop: H1 over, lead + bilde side-ved-side med «inline»-følelse */
+    @media (min-width: 860px){
+      .hero{
+        display:flex;
+        flex-wrap:wrap;             /* rad 1: H1 full bredde; rad 2: lead + img */
+        column-gap: 18px;
+        row-gap: 10px;
+        align-items:center;         /* vertikal midtstilling av rad 2 */
+      }
+      .hero > h1{
+        flex: 0 0 100%;
+        margin-bottom: 8px;
+      }
+      .hero > .lead{
+        flex: 1 1 0;
+        margin: 0;                  /* ryddig inline på desktop */
+        text-wrap: normal;
+        align-self: center;         /* sikker vertikal sentrering */
+      }
+      .hero > .hero-img{
+        flex: 0 0 auto;
+        margin: 0;
+        max-width: 260px;           /* smalere for pen balanse */
+        max-height: 360px;
+      }
     }
-  }
+  
+    /* KNAPPER */
+    .btns{
+      width:100%; max-width: var(--content-max);
+      margin:0 auto 18px;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    a.button, button.button{
+      display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
+      padding:clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
+      background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
+      font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
+      transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
+    }
+    a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
+    a.button:active, button.button:active{ transform:translateY(1px); }
+    .email-btn{ border-color: var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
+    @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
+    .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
+  
+    .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
+    .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
+  
+    /* FOOTER – ekte fixed nederst, full bredde */
+    footer{
+      position: fixed !important;   /* sørg for at ingenting overstyrer */
+      left:0; right:0; bottom:0;
+      height: var(--footer-h);
+      width: 100vw;
+      background: var(--footer-bg);
+      z-index: 9999;
+    }
+    .footer-inner{
+      max-width:960px; height:100%;
+      margin:0 auto; padding:0 var(--pad);
+      display:flex; align-items:center; justify-content:center;
+    }
+    .fb-share{
+      display:inline-flex; align-items:center; gap:8px;
+      color:#fff; font-weight:800; text-decoration: underline; /* hvit tekst */
+    }
+    .fb-share:hover{ opacity:.95; }
+    .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
+  
+    /* STATUS-BOBLE – scroller med innholdet, men holder seg nede til høyre i viewport (sticky) */
+    .status{
+      position: sticky;
+      bottom: 12px;                 /* avstand til bunn av viewport */
+      margin-left: auto;            /* skyv til høyre */
+      align-self: flex-end;         /* sikre høyrejustering i flex-containeren */
+      background:rgba(0,0,0,.25);
+      padding:6px 10px; border-radius:8px; font-size:12px; color:#fff;
+      z-index: 10000;               /* over footeren */
+    }
+  
+    /* MOBIL: skjul brand-tekst inni lead, og gi ekstra luft */
+    @media (max-width: 768px){
+      .lead{ text-align:center; margin-top: 18px; }
+      .lead .brand{ display:none; }     /* skjul brand-tekst i lead på mobil */
+      .hero-img{ margin-bottom: 20px; } /* enda mer luft mellom bilde og lead */
+    }
+  </style>
 
-  /* KNAPPER */
-  .btns{
-    width:100%; max-width: var(--content-max);
-    margin:0 auto 18px;
-    display:flex; flex-direction:column; gap:10px;
-  }
-  a.button, button.button{
-    display:flex; align-items:center; justify-content:center; gap:10px; width:100%;
-    padding:clamp(12px,3.6vw,16px); border-radius:12px; border:2px solid var(--btn-border);
-    background:var(--btn-bg); color:#fff; text-decoration:none; font-size:clamp(16px,4.2vw,18px);
-    font-weight:800; line-height:1.25; cursor:pointer; text-align:center;
-    transition: background .15s ease, border-color .15s ease, transform .06s ease, box-shadow .15s ease;
-  }
-  a.button:hover, button.button:hover{ background:var(--btn-bg-hover); }
-  a.button:active, button.button:active{ transform:translateY(1px); }
-  .email-btn{ border-color: var(--btn-border-strong); position:relative; box-shadow:0 0 0 0 rgba(244,211,31,.55); animation:borderPulse 1.8s ease-in-out infinite; }
-  @keyframes borderPulse{ 0%{box-shadow:0 0 0 0 rgba(244,211,31,.55)} 60%{box-shadow:0 0 0 10px rgba(244,211,31,0)} 100%{box-shadow:0 0 0 0 rgba(244,211,31,0)} }
-  .btn-icon{ width:1.2em; height:1.2em; display:inline-block; }
-
-  .hint{ opacity:.95; font-size:clamp(12px,3.8vw,14px); margin:6px 2px 12px; text-align:center; }
-  .inline-email a{ color:#fff; font-weight:800; text-decoration: underline; }
-
-  /* FOOTER – fast, full bredde, nederst alltid */
-  footer{
-    position: fixed;
-    left:0; right:0; bottom:0;
-    height: var(--footer-h);
-    background: var(--footer-bg);
-    z-index: 10;
-  }
-  .footer-inner{
-    max-width:960px; height:100%;
-    margin:0 auto; padding:0 var(--pad);
-    display:flex; align-items:center; justify-content:center;
-  }
-  .fb-share{
-    display:inline-flex; align-items:center; gap:8px;
-    color:#fff; font-weight:800; text-decoration: underline; /* hvit tekst */
-  }
-  .fb-share:hover{ opacity:.95; }
-  .fb-icon{ width:1.1em; height:1.1em; display:inline-block; }
-
-  /* STATUS-BOBLE – sticky nede til høyre, over footeren */
-  .status{
-    position: sticky;
-    bottom: calc(var(--footer-h) + 12px); /* «klynger» seg til bunnen, men over footer */
-    margin-left: auto;                    /* skyv til høyre i containeren */
-    width: fit-content;
-    background:rgba(0,0,0,.25);
-    padding:6px 10px; border-radius:8px; font-size:12px; color:#fff;
-    z-index: 9;                           /* under footer (som er 10), men vises over innhold */
-  }
-
-  /* Mobil – lead midtstilles & får ekstra luft på toppen */
-  @media (max-width: 768px){
-    .lead{ text-align:center; margin-top: 16px; }
-  }
-</style>
 
 
 
