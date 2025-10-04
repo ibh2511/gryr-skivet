@@ -65,18 +65,32 @@
     .wrap{ flex:1 0 auto; max-width:960px; margin:0 auto; }
   
     h1{ text-align:center; font-weight:800; font-size:clamp(26px,6vw,40px); margin:0 0 12px; letter-spacing:.2px; }
+    /* h1 i brand-gul (samme som .lead .brand) */
+    h1.brand{ color: var(--accent); }
   
-    /* HERO: bilde til høyre på desktop, mellom h1 og lead på mobil */
-    .hero{ display:grid; grid-template-columns: 1fr minmax(220px, 320px); gap:16px; align-items:start; }
+    /* HERO: desktop = bilde til høyre, mobil = bilde mellom h1 og lead (styres av HTML-rekkefølgen) */
+    .hero{
+      display:grid;
+      grid-template-columns: 1fr minmax(220px, 320px);
+      gap:16px;
+      align-items:start;
+    }
     .hero-img{
-      width:100%; height:auto; max-height:460px; object-fit:contain; border-radius:12px;
+      width:100%;
+      height:auto;
+      max-height:460px;
+      object-fit:contain;
+      border-radius:12px;
       box-shadow:0 8px 24px rgba(0,0,0,.18);
       justify-self:end;
     }
   
     .lead{
       margin: 0 0 18px;
-      line-height: 1.6; font-size: clamp(15px, 4.2vw, 18px); font-weight: 700; letter-spacing:.2px;
+      line-height: 1.6;
+      font-size: clamp(15px, 4.2vw, 18px);
+      font-weight: 700;
+      letter-spacing:.2px;
       text-wrap: balance;
     }
     .lead .brand{ color: var(--accent); font-weight: 800; letter-spacing: .4px; }
@@ -102,7 +116,9 @@
     footer{
       position: sticky; bottom:0; z-index: 10;
       /* full-bleed: overlapp body-padding på sider */
-      left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; width:100vw;
+      left:50%; right:50%;
+      margin-left:-50vw; margin-right:-50vw;
+      width:100vw;
       background: var(--footer-bg);
       backdrop-filter: saturate(120%) blur(0px);
     }
@@ -112,7 +128,7 @@
     }
     .fb-share{
       display:inline-flex; align-items:center; gap:8px;
-      color:#00324a; /* litt mørkere for kontrast på lys footer */
+      color:#fff; /* hvit tekst i footeren */
       font-weight:800; text-decoration: underline;
     }
     .fb-share:hover{ opacity:.95; }
@@ -120,10 +136,13 @@
   
     /* MOBIL-tilpasninger */
     @media (max-width: 768px){
-      .hero{ display:block; }
+      .hero{
+        display:block;  /* gjør at elementene følger HTML-rekkefølgen: H1 → IMG → LEAD */
+      }
       .hero-img{
-        max-width: min(70%, 380px);
-        margin: 10px auto 10px; display:block;
+        max-width: clamp(140px, 40vw, 220px); /* mye mindre på mobil */
+        height:auto;
+        margin: 2px auto 10px; display:block;
       }
       .lead{ text-align:center; } /* midtstill lead på mobil */
     }
@@ -137,21 +156,20 @@
   <div class="wrap">
     <h1 class="brand">GRYR® SKIVET</h1>
 
-    <div class="hero">
-      <div>
-        <h1 class="brand">GRYR® SKIVET</h1>
-        <p class="lead">
-          😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
-          <span class="brand">GRYR® SKIVET</span> må tilbake!<br><br>
-          Ring, send e-post, last ned QR-kode til låseskjerm – og del siden videre 📢
-        </p>
-      </div>
+   <div class="hero">
+      <h1 class="brand">GRYR® SKIVET</h1>
     
       <img
         class="hero-img"
         src="img/gryr-skivet.png"
         width="617" height="838"
         alt="GRYR® SKIVET – produktbilde">
+    
+      <p class="lead">
+        😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
+        <span class="brand">GRYR® SKIVET</span> må tilbake!<br><br>
+        Ring, send e-post, last ned QR-kode til låseskjerm – og del siden videre 📢
+      </p>
     </div>
 
 
