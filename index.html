@@ -14,7 +14,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Gryr Skivet – Aksjon">
   <meta property="og:url" content="https://ibh2511.github.io/gryr-skivet/gryr-skivet">
-  <meta property="og:title" content="Få GRYR® SKIVET tilbake">
+  <meta property="og:title" content="Få GRYR® SKIVET ost tilbake">
   <meta property="og:description" content="Ring, send e-post, last ned QR – og del siden videre. Hjelp oss å få GRYR® SKIVET tilbake i butikkhyllene.">
   <meta property="og:image" content="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg">
   <meta property="og:image:secure_url" content="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg">
@@ -24,7 +24,7 @@
   
   <!-- X (Twitter) -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Få GRYR® SKIVET tilbake">
+  <meta name="twitter:title" content="Få GRYR® SKIVET ost tilbake">
   <meta name="twitter:description" content="Ring, send e-post, last ned QR - og del siden videre.">
   <meta name="twitter:image" content="https://ibh2511.github.io/gryr-skivet/img/gryr-share.jpg">
   
@@ -171,7 +171,7 @@
     <p class="lead">
       😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
       Nok et produkt er borte fra butikkhyllene.<br><br>
-      <span class="brand">GRYR® SKIVET</span> må tilbake! <br><br>
+      <span class="brand">GRYR® SKIVET</span> ost må tilbake! <br><br>
       Ring, send e-post, last ned QR-kode til låseskjerm - og del siden videre 📢 <br><br>
       Del også linken til denne siden på Facebook 👍<br><br>
     </p>
@@ -182,7 +182,7 @@
       <a id="mailLink" class="button email-btn"
          href="mailto:forbruker@tine.no?subject=🌱 GRYR® SKIVET tilbake?&body=Hei Tine,
       
-      😞 Det er kjedelig når bra produkter forsvinner fra butikkene. Jeg håper dere revurderer og setter GRYR® SKIVET i produksjon igjen, så den kommer tilbake – vi er mange som savner den.
+      😞 Det er kjedelig når bra produkter forsvinner fra butikkene. Jeg håper dere revurderer og setter GRYR® SKIVET ost i produksjon igjen, så den kommer tilbake – vi er mange som savner den.
       
       Vennlig hilsen
       [ DITT_NAVN ] ❓">
@@ -330,7 +330,7 @@
       e.preventDefault();
       await logEvent('download');
       const a = document.createElement('a');
-      a.href = new URL('img/gryr-skivet-qr.png', location.href).href; // <- fungerer i subfoldere
+      a.href = new URL('img/gryr-skivet-qr.png', location.href).href; 
       a.download = 'gryr-skivet-qr.png';
       document.body.appendChild(a); a.click(); a.remove();
     });
