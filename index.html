@@ -210,6 +210,10 @@
       .lead{ text-align:center; }
       .hero-img{ margin-bottom: 26px; }
     }
+
+    /* IAB: erstattet deling-ikon skal ikke være klikkbar/understreket */
+    .fb-share.iab-disabled { text-decoration: none; cursor: default; pointer-events: none; }
+
   </style>
 
 
@@ -405,6 +409,23 @@
       e.preventDefault();
       shareOrOpenFacebook();
     });
+
+    // IAB-fix: erstatt dele-lenke med emoji 🦾 kun i IG/FB/Messenger webview
+    (function(){
+      const isIAB = /FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(navigator.userAgent);
+      if (!isIAB) return;
+    
+      const shareLink = document.getElementById('fbShare');
+      if (!shareLink || !shareLink.parentNode) return;
+    
+      const emoji = document.createElement('span');
+      emoji.textContent = '🦾';
+      emoji.className = 'fb-share iab-disabled';
+      emoji.setAttribute('aria-label', 'Deling er deaktivert i denne app-leseren');
+    
+      // Erstatt lenken med emoji (event-lytteren på lenken forsvinner med elementet)
+      shareLink.parentNode.replaceChild(emoji, shareLink);
+    })();
 
     // ======== IAB-tilpasning (FB/IG/Messenger): strip mailto + bytt hint ========
     (function(){
