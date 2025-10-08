@@ -181,7 +181,12 @@
     const $ = (sel) => document.querySelector(sel);
     function show(id, on=true){ document.getElementById(id).hidden = !on; }
     function setStatus(msg){ document.getElementById('status').textContent = msg; }
-    function setUpdated(ts){ document.getElementById('updatedAt').textContent = 'Sist oppdatert: ' + ts; }
+    function setUpdated(timeStr, startStr){
+      let s = 'Sist oppdatert: ' + timeStr;
+      if (startStr) s += ' | Kampanjen startet: ' + startStr;
+      document.getElementById('updatedAt').textContent = s;
+    }
+    
     function handleAuthError(){
       show('app', false); show('error', false); show('forbidden', true);
     }
@@ -241,7 +246,19 @@
             const pct = uniqCount ? Math.round((engaged/uniqCount)*100) : 0;
             $('#engagement').textContent = `${engaged} / ${uniqCount} (${pct}%)`;
 
-            setUpdated(new Date().toLocaleTimeString());
+            const nowTime = new Date().toLocaleTimeString('nb-NO', {
+              hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+            
+            // Finn eldste event (kampanjestart) – events er hentet desc, så siste element er eldst
+            let startStr = '';
+            if (Array.isArray(events) && events.length > 0) {
+              const oldest = events[events.length - 1].created_at;
+              startStr = new Date(oldest).toLocaleDateString('nb-NO');
+            }
+            
+            setUpdated(nowTime, startStr);
+
             setStatus('OK');
           }catch(err){ console.error(err); showError(err); }
         }
