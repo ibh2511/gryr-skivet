@@ -1,6 +1,6 @@
-# GRYR® SKIVET – Mini Campaign Site 🍞🧀
+# GRYR® SKIVET / REVET – Mini Campaign Site 🍞🧀
 
-A tiny, privacy-aware campaign site that helps people **call**, **email**, **download a QR lock screen**, and **share on Facebook** to bring *GRYR® SKIVET* back to stores.  
+A tiny, privacy-aware campaign site that helps people **call**, **email**, **download a QR lock screen**, and **share on Facebook** to bring *GRYR® SKIVET* and *GRYR® REVET* back to stores.  
 Built as a **static site on GitHub Pages** with analytics handled by **Supabase Edge Functions** (server-side, secure). ⚡
 
 ---
