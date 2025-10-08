@@ -107,6 +107,8 @@
       transform: rotate(-3deg);
       transform-origin: center;
     }
+    .hero-img { transition: opacity .35s ease; }
+    .hero-img.is-fading { opacity: 0; }
     .lead{
       margin: 16px 0 18px;
       line-height: 1.6;
@@ -225,10 +227,16 @@
       <h1 class="brand">GRYR® SKIVET / GRYR® REVET</h1>
     
       <img
+        id="heroImg"
         class="hero-img"
         src="img/gryr-skivet.png"
         width="617" height="838"
-        alt="GRYR® SKIVET – produktbilde">
+        alt="GRYR® SKIVET – produktbilde"
+        data-src1="img/gryr-skivet.png"
+        data-alt1="GRYR® SKIVET – produktbilde"
+        data-src2="img/gryr-revet.png"
+        data-alt2="GRYR® REVET – produktbilde"
+      />
     
       <p class="lead">
         😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
@@ -449,6 +457,33 @@
         });
       }
     })();
+
+    // Preload neste bilde for å unngå «blink»
+    (function(){
+      const hero = document.getElementById('heroImg');
+      if (!hero) return;
+  
+      const preload = new Image();
+      preload.src = hero.dataset.src2;
+  
+      let showing = 1; // starter på data-src1/alt1
+  
+      setInterval(() => {
+        // fade ut
+        hero.classList.add('is-fading');
+  
+        // bytt bilde etter liten fade-delay
+        setTimeout(() => {
+          showing = (showing === 1) ? 2 : 1;
+          hero.src = hero.dataset['src' + showing];
+          hero.alt = hero.dataset['alt' + showing];
+  
+          // fade inn igjen
+          hero.classList.remove('is-fading');
+        }, 300);
+      }, 10000); // bytt hvert 10. sekund
+    })();
+
 
   </script>
 </body>
