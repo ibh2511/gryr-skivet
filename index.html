@@ -95,20 +95,23 @@
       max-width: var(--content-max);
       margin: 0 auto 18px;
     }
+    
     .hero-img{
-      width:100%; height:auto;
-      max-width: 320px;
-      max-height: 420px;
-      object-fit: contain;
+      display:block;
+      width: min(320px, 60vw);     
+      aspect-ratio: 617 / 838;     
+      height: auto;                
+      object-fit: contain;         
       border-radius:12px;
       box-shadow:none;
-      display:block;
       margin: 6px auto 22px;
       transform: rotate(-3deg);
       transform-origin: center;
+      transition: opacity .35s ease;
     }
-    .hero-img { transition: opacity .35s ease; }
+    
     .hero-img.is-fading { opacity: 0; }
+
     .lead{
       margin: 16px 0 18px;
       line-height: 1.6;
@@ -226,18 +229,20 @@
     <div class="hero">
       <h1 class="brand">GRYR® SKIVET / GRYR® REVET</h1>
     
-      <img
-        id="heroImg"
-        class="hero-img"
-        src="img/gryr-skivet.png"
-        width="617" height="838"
-        alt="GRYR® SKIVET – produktbilde"
-        data-src1="img/gryr-skivet.png"
-        data-alt1="GRYR® SKIVET – produktbilde"
-        data-src2="img/gryr-revet.png"
-        data-alt2="GRYR® REVET – produktbilde"
-      />
-    
+      <div class="hero-frame">
+        <img
+          id="heroImg"
+          class="hero-img"
+          src="img/gryr-skivet.png"
+          width="617" height="838"
+          alt="GRYR® SKIVET – produktbilde"
+          data-src1="img/gryr-skivet.png"
+          data-alt1="GRYR® SKIVET – produktbilde"
+          data-src2="img/gryr-revet.png"
+          data-alt2="GRYR® REVET – produktbilde"
+        />
+      </div>
+ 
       <p class="lead">
         😞 Det er kjedelig når veganske produkter forsvinner fra markedet.<br>
         Enda flere produkter er borte fra butikkhyllene.<br><br>
