@@ -239,6 +239,21 @@
     }
     .copy-inline:hover{ opacity: 1; }
 
+    .copy-chip{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:10px;
+      border:1.5px solid rgba(255,255,255,.45);
+      background:rgba(255,255,255,.08);
+      font-weight:800;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .copy-chip:hover{ background:rgba(255,255,255,.14); }
+    .copy-chip:active{ transform:translateY(1px); }
+    .copy-chip:focus{ outline:2px solid rgba(255,255,255,.6); outline-offset:2px; }
+
 
   </style>
 
@@ -289,8 +304,8 @@
       </p>
       <!-- IAB-hint (vises i FB/IG/Messenger) -->
       <p class="hint inline-email" id="emailHintIAB" hidden>
-        Trykk på knappen for å sende e-post til forbruker@tine.no · 
-        <button id="copyFullEmail" class="copy-inline" type="button">📋 kopier ferdig tekst</button>
+        <span id="copyFullEmail" class="copy-chip" role="button" tabindex="0">📋 Kopier ferdig skrevet e-post</span>
+        &nbsp;og trykk på knappen for å sende e-post til <strong>forbruker@tine.no</strong>
       </p>
 
 
@@ -484,17 +499,17 @@
       if (pIab)  pIab.hidden  = false;
     
       // Ferdig tekst (kun body – uten unødige innrykk)
-      const MAIL_BODY = `Hei Tine,
-    
-        😞 Det er kjedelig når bra produkter forsvinner fra butikkene.
-        
-        Jeg håper dere revurderer og setter GRYR® SKIVET og GRYR® REVET i produksjon igjen,
-        så de kommer tilbake. 
-        
-        Vi er mange som savner disse produktene! 
-        
-        Vennlig hilsen
-        [ DITT_NAVN ] ❓`;
+  const MAIL_BODY = `Hei Tine,
+
+😞 Det er kjedelig når bra produkter forsvinner fra butikkene.
+
+Jeg håper dere revurderer og setter GRYR® SKIVET og GRYR® REVET i produksjon igjen,
+så de kommer tilbake. 
+
+Vi er mange som savner disse produktene! 
+
+Vennlig hilsen
+[ DITT_NAVN ] ❓`;
     
       // Liten kopi-lenke inne i hintet
       const copyBtn = document.getElementById('copyFullEmail');
@@ -502,15 +517,18 @@
         try {
           await navigator.clipboard.writeText(MAIL_BODY);
         } catch {
-          // Fallback for eldre nettlesere
           const ta = document.createElement('textarea');
-          ta.value = MAIL_BODY;
-          document.body.appendChild(ta); ta.select();
+          ta.value = MAIL_BODY; document.body.appendChild(ta); ta.select();
           document.execCommand('copy'); ta.remove();
         }
-        setStatus?.('Ferdig tekst kopiert ✔');
+        setStatus?.('Ferdig e-post kopiert ✔');
         try { await logEvent('text_copy'); } catch {}
       });
+      // (valgfritt – gjør Enter/Space mulig på chipen)
+      copyBtn?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyBtn.click(); }
+      });
+
     })();
 
 
