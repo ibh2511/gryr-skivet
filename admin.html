@@ -226,8 +226,8 @@
             const { visitors, events } = await callAdmin('counts');
             const uniqCount = Array.isArray(visitors) ? visitors.length : 0;
             
-            const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0, iab_text_copy:0 };
-            const CLICK = new Set(['phone','email','email_link','download','fb_share','iab_text_copy']);
+            const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0, text_copy:0 };
+            const CLICK = new Set(['phone','email','email_link','download','fb_share','text_copy']);
             
             const clickers = new Set();
             
