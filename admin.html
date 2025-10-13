@@ -224,21 +224,31 @@
           try{
             setStatus('Henter…');
             const { visitors, events } = await callAdmin('counts');
-
             const uniqCount = Array.isArray(visitors) ? visitors.length : 0;
-
-            const counts = { phone:0, email:0, email_link:0, text_copy:0, download:0, fb_share:0 };
-            const CLICK = new Set(['phone','email','email_link','download','fb_share']);
+            
+            const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0, iab_text_copy:0 };
+            const CLICK = new Set(['phone','email','email_link','download','fb_share','iab_text_copy']);
+            
             const clickers = new Set();
-
+            
             (events||[]).forEach(e => {
               if (counts[e.event_type] !== undefined) counts[e.event_type]++;
               if (CLICK.has(e.event_type) && e.visitor_id) clickers.add(e.visitor_id);
             });
-
+            
+            // "E-post knapp" med tak: maks 2 per visitor_id
+            const perUserEmail = new Map(); 
+            (events||[]).forEach(e => {
+              if (e.event_type === 'email' && e.visitor_id) {
+                perUserEmail.set(e.visitor_id, 1 + (perUserEmail.get(e.visitor_id) || 0));
+              }
+            });
+            let cappedEmailTotal = 0;
+            perUserEmail.forEach(n => { cappedEmailTotal += Math.min(2, n); });
+            
             $('#uniq').textContent       = uniqCount;
             $('#phone').textContent      = counts.phone;
-            $('#email').textContent      = counts.email;
+            $('#email').textContent      = cappedEmailTotal;
             $('#email_link').textContent = counts.email_link;
             $('#text_copy').textContent  = counts.text_copy;
             $('#download').textContent   = counts.download;
