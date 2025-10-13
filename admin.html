@@ -134,8 +134,9 @@
         <tbody>
           <tr><td>Unike besøk</td><td id="uniq">…</td></tr>
           <tr><td>Telefon</td><td id="phone">…</td></tr>
-          <tr><td>E-post knapp</td><td id="email">…</td></tr>
+          <tr><td>E-post knapp (maks 2) </td><td id="email">…</td></tr>
           <tr><td>E-post lenke</td><td id="email_link">…</td></tr>
+          <tr><td>Kopi av tekst</td><td id="text_copy">…</td></tr>
           <tr><td>Nedlastinger</td><td id="download">…</td></tr>
           <tr><td>Facebook delinger</td><td id="fb_share">…</td></tr>
           <tr><td><strong>Engasjement</strong> (unike som har klikket ≥1)</td><td id="engagement">…</td></tr>
@@ -226,7 +227,7 @@
 
             const uniqCount = Array.isArray(visitors) ? visitors.length : 0;
 
-            const counts = { phone:0, email:0, email_link:0, download:0, fb_share:0 };
+            const counts = { phone:0, email:0, email_link:0, text_copy:0, download:0, fb_share:0 };
             const CLICK = new Set(['phone','email','email_link','download','fb_share']);
             const clickers = new Set();
 
@@ -239,6 +240,7 @@
             $('#phone').textContent      = counts.phone;
             $('#email').textContent      = counts.email;
             $('#email_link').textContent = counts.email_link;
+            $('#text_copy').textContent  = counts.text_copy;
             $('#download').textContent   = counts.download;
             $('#fb_share').textContent   = counts.fb_share;
 
