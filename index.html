@@ -270,10 +270,14 @@
       <p class="hint inline-email" id="emailHintIAB" hidden>
         Trykk på knappen for å sende e-post til forbruker@tine.no
       </p>
+      <a id="copyEmailTemplate" class="button" hidden>📋 Kopier ferdig tekst</a>
+      <p class="hint" id="copyEmailTemplateHint" hidden>Lim inn i e-postappen før du sender.</p>
+
 
       <button id="qrBtn" class="button">Last ned låseskjermbilde med QR-kode</button>
       <p class="hint">QR-koden peker til denne siden.</p>
     </div>
+    <p id="campaignMeta" style="opacity:.85; font-size:12px; text-align:center; margin:10px 0 0;"></p>
   </div>
 
   <footer>
@@ -444,24 +448,59 @@
     (function(){
       const isIAB = /FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(navigator.userAgent);
       if (!isIAB) return;
-
+    
+      // Behold subject, fjern body
       const mailA = document.getElementById('mailLink');
-      if (mailA) mailA.setAttribute('href', 'mailto:forbruker@tine.no?subject=GRYR%20SKIVET%20%26%20REVET%20tilbake%3F&');
-
+      if (mailA) {
+        const subj = encodeURIComponent("🌱 GRYR® SKIVET & REVET tilbake?");
+        mailA.setAttribute('href', `mailto:forbruker@tine.no?subject=${subj}`);
+      }
+    
       const pOrig = document.getElementById('emailHintOrig');
       const pIab  = document.getElementById('emailHintIAB');
       if (pOrig && pIab) { pOrig.hidden = true; pIab.hidden = false; }
-
+    
       const copyInp = document.getElementById('emailCopy');
       if (copyInp) {
         const selectAll = () => { copyInp.focus(); copyInp.select(); };
         copyInp.addEventListener('focus', selectAll);
         copyInp.addEventListener('click', async () => {
           selectAll();
-          try { await navigator.clipboard.writeText(copyInp.value); setStatus('E-post kopiert'); } catch {}
+          try { await navigator.clipboard.writeText(copyInp.value); } catch {}
         });
       }
-    })();
+    
+      const copyFullBtn = document.getElementById('copyFullEmail');
+      if (copyFullBtn) copyFullBtn.hidden = false;
+    
+      const MAIL_BODY = `Hei Tine,
+    
+      😞 Det er kjedelig når bra produkter forsvinner fra butikkene.
+      
+      Jeg håper dere revurderer og setter GRYR® SKIVET og GRYR® REVET i produksjon igjen,
+      så de kommer tilbake. 
+      
+      Vi er mange som savner disse produktene! 
+      
+      Vennlig hilsen
+      [ DITT_NAVN ]`;
+      
+        // Logg som EGEN event-type: 'text_copy'
+        copyFullBtn?.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(MAIL_BODY);
+          } catch {
+            const ta = document.createElement('textarea');
+            ta.value = MAIL_BODY; document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); ta.remove();
+          }
+          setStatus?.('Ferdig tekst kopiert ✔');
+          try { await logEvent('text_copy'); } catch(_) {}
+        });
+      
+        // Viktig: klikk på e-postknappen skal fortsatt logges som 'email' (har du allerede)
+      })();
+
 
     // Preload neste bilde for å unngå «blink»
     (function(){
