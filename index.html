@@ -491,7 +491,7 @@
       Vi er mange som savner disse produktene! 
       
       Vennlig hilsen
-      [ DITT_NAVN ]`;
+      [ DITT_NAVN ] ❓`;
       
         // Logg som EGEN event-type: 'text_copy'
         copyFullBtn?.addEventListener('click', async () => {
@@ -506,7 +506,6 @@
           try { await logEvent('text_copy'); } catch(_) {}
         });
       
-        // Viktig: klikk på e-postknappen skal fortsatt logges som 'email' (har du allerede)
       })();
 
 
