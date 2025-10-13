@@ -254,6 +254,17 @@
     .copy-chip:active{ transform:translateY(1px); }
     .copy-chip:focus{ outline:2px solid rgba(255,255,255,.6); outline-offset:2px; }
 
+    .copy-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.10);
+      color: #fff; padding: 4px 8px; border-radius: 999px;
+      font: inherit; cursor: pointer; border: 0; opacity: .95;
+    }
+    .copy-badge:hover { background: rgba(255,255,255,.14); }
+    .copy-badge:focus { outline: 1px solid rgba(255,255,255,.5); outline-offset: 2px; }
+    .copy-badge .txt { font-weight: 700; }
+
+
 
   </style>
 
@@ -304,11 +315,9 @@
       </p>
       <!-- IAB-hint (vises i FB/IG/Messenger) -->
       <p class="hint inline-email" id="emailHintIAB" hidden>
-        <span id="copyFullEmail" class="copy-chip" role="button" tabindex="0">📋 Kopier ferdig skrevet e-post</span>
+        <span id="copyFullEmail" class="copy-badge" role="button" tabindex="0">📋 Kopier ferdig skrevet e-post</span>
         &nbsp;og trykk på knappen for å sende e-post til <strong>forbruker@tine.no</strong>
       </p>
-
-
 
       <button id="qrBtn" class="button">Last ned låseskjermbilde med QR-kode</button>
       <p class="hint">QR-koden peker til denne siden.</p>
@@ -503,8 +512,7 @@
 
 😞 Det er kjedelig når bra produkter forsvinner fra butikkene.
 
-Jeg håper dere revurderer og setter GRYR® SKIVET og GRYR® REVET i produksjon igjen,
-så de kommer tilbake. 
+Jeg håper dere revurderer og setter GRYR® SKIVET og GRYR® REVET i produksjon igjen, så de kommer tilbake. 
 
 Vi er mange som savner disse produktene! 
 
