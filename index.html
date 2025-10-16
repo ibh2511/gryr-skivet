@@ -461,8 +461,8 @@
       e.preventDefault();
       await logEvent('download');
       const a = document.createElement('a');
-      a.href = new URL('img/gryr-ost-qr.png', location.href).href; 
-      a.download = 'gryr-ost-qr.png';
+      a.href = new URL('img/gryr-qr.png', location.href).href; 
+      a.download = 'gryr-qr.png';
       document.body.appendChild(a); a.click(); a.remove();
     });
   
