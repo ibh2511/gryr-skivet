@@ -42,44 +42,31 @@ serve(async (req) => {
     }
 
     if (op === "counts") {
-      async function getCount(path: string): Promise<number> {
-        const r = await fetch(`${url}/rest/v1/${path}`, {
-          headers: { ...svcHdrs, Prefer: "count=exact" }
-        });
-        if (!r.ok) throw new Error(`count failed for ${path}`);
-        const cr = r.headers.get("content-range") || "0-0/0";
-        const total = parseInt(cr.split("/")[1] || "0", 10);
-        return Number.isFinite(total) ? total : 0;
+      const r = await fetch(`${url}/rest/v1/rpc/admin_counts`, {
+        method: "POST",
+        headers: svcHdrs,
+        body: JSON.stringify({}) // må være POST
+      });
+      if (!r.ok) {
+        const t = await r.text();
+        return new Response(JSON.stringify({ error: "admin_counts rpc failed", detail: t }), { status: 500, headers: baseHdrs });
       }
-          
-      const uniq = await getCount(`visitors?select=id&limit=1`);
-    
-      const phone      = await getCount(`events?event_type=eq.phone&select=event_type&limit=1`);
-      const email_link = await getCount(`events?event_type=eq.email_link&select=event_type&limit=1`);
-      const text_copy  = await getCount(`events?event_type=eq.text_copy&select=event_type&limit=1`);
-      const download   = await getCount(`events?event_type=eq.download&select=event_type&limit=1`);
-      const fb_share   = await getCount(`events?event_type=eq.fb_share&select=event_type&limit=1`);
-    
-      //    capped = min(total_email, 2 * unique_emailers)
-      const email_total  = await getCount(`events?event_type=eq.email&select=event_type&limit=1`);
-      const email_unique = await getCount(`events?event_type=eq.email&select=visitor_id&distinct=true&limit=1`);
-      const email = Math.min(email_total, 2 * email_unique);
-    
-      const rStart = await fetch(
-        `${url}/rest/v1/events?select=created_at&order=created_at.asc&limit=1`,
-        { headers: svcHdrs }
-      );
-      let campaign_start: string | null = null;
-      if (rStart.ok) {
-        const arr = await rStart.json();
-        if (Array.isArray(arr) && arr[0]?.created_at) campaign_start = arr[0].created_at;
-      }
-    
-      return new Response(JSON.stringify({
-        uniq, phone, email, email_link, text_copy, download, fb_share, campaign_start
-      }), { headers: baseHdrs });
+      const data = await r.json(); // jsonb -> rett ut
+      return new Response(JSON.stringify(data), { headers: baseHdrs });
     }
-
+    
+    if (op === "export") {
+      // Rå events for CSV
+      const r = await fetch(`${url}/rest/v1/events?select=created_at,event_type,visitor_id&order=created_at.asc`, {
+        headers: svcHdrs
+      });
+      if (!r.ok) {
+        const t = await r.text();
+        return new Response(JSON.stringify({ error: "export failed", detail: t }), { status: 500, headers: baseHdrs });
+      }
+      const events = await r.json();
+      return new Response(JSON.stringify({ events }), { headers: baseHdrs });
+    }
 
     if (op === "reset") {
       const now = new Date().toISOString();
