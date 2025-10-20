@@ -51,7 +51,7 @@ serve(async (req) => {
         const total = parseInt(cr.split("/")[1] || "0", 10);
         return Number.isFinite(total) ? total : 0;
       }
-    
+          
       const uniq = await getCount(`visitors?select=id&limit=1`);
     
       const phone      = await getCount(`events?event_type=eq.phone&select=event_type&limit=1`);
@@ -61,8 +61,8 @@ serve(async (req) => {
       const fb_share   = await getCount(`events?event_type=eq.fb_share&select=event_type&limit=1`);
     
       //    capped = min(total_email, 2 * unique_emailers)
-      const email_total   = await getCount(`events?event_type=eq.email&select=event_type&limit=1`);
-      const email_unique  = await getCount(`events?event_type=eq.email&select=visitor_id&distinct=visitor_id&limit=1`);
+      const email_total  = await getCount(`events?event_type=eq.email&select=event_type&limit=1`);
+      const email_unique = await getCount(`events?event_type=eq.email&select=visitor_id&distinct=true&limit=1`);
       const email = Math.min(email_total, 2 * email_unique);
     
       const rStart = await fetch(
