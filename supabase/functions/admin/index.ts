@@ -42,13 +42,48 @@ serve(async (req) => {
     }
 
     if (op === "counts") {
-      const v = await fetch(`${url}/rest/v1/visitors?select=id`, { headers: svcHdrs });
-      const e = await fetch(`${url}/rest/v1/events?select=event_type,visitor_id,created_at&order=created_at.desc`, { headers: svcHdrs });
-      if (!v.ok || !e.ok) return new Response(JSON.stringify({ error: "Fetch failed" }), { status: 500, headers: baseHdrs });
-
-      const visitors = await v.json();
-      const events   = await e.json();
-      return new Response(JSON.stringify({ visitors, events }), { headers: baseHdrs });
+      const rVisitors = await fetch(
+        `${url}/rest/v1/visitors?select=count:count()`,
+        { headers: svcHdrs }
+      );
+      if (!rVisitors.ok) return new Response(JSON.stringify({ error: "visitors failed" }), { status: 500, headers: baseHdrs });
+      const [{ count: uniq }] = await rVisitors.json();
+    
+      const rGrouped = await fetch(
+        `${url}/rest/v1/events?select=event_type,count:count()`,
+        { headers: svcHdrs }
+      );
+      if (!rGrouped.ok) return new Response(JSON.stringify({ error: "grouped failed" }), { status: 500, headers: baseHdrs });
+      const grouped: Array<{event_type: string; count: number}> = await rGrouped.json();
+    
+      const get = (t: string) => grouped.find(g => g.event_type === t)?.count || 0;
+      const phone      = get('phone');
+      const email_link = get('email_link');
+      const text_copy  = get('text_copy');
+      const download   = get('download');
+      const fb_share   = get('fb_share');
+    
+      const rEmailPerUser = await fetch(
+        `${url}/rest/v1/events?select=visitor_id,count:count()&event_type=eq.email`,
+        { headers: svcHdrs }
+      );
+      if (!rEmailPerUser.ok) return new Response(JSON.stringify({ error: "email per user failed" }), { status: 500, headers: baseHdrs });
+      const emailPerUser: Array<{visitor_id: string|null; count: number}> = await rEmailPerUser.json();
+      const email = emailPerUser.reduce((sum, row) => sum + Math.min(2, row.count || 0), 0);
+    
+      const rStart = await fetch(
+        `${url}/rest/v1/events?select=min:created_at`,
+        { headers: svcHdrs }
+      );
+      let campaign_start: string | null = null;
+      if (rStart.ok) {
+        const [{ min }] = await rStart.json();
+        campaign_start = min || null;
+      }
+    
+      return new Response(JSON.stringify({
+        uniq, phone, email, email_link, text_copy, download, fb_share, campaign_start
+      }), { headers: baseHdrs });
     }
 
     if (op === "reset") {
