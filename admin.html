@@ -227,11 +227,17 @@
         
             $('#uniq').textContent       = data.uniq ?? 0;
             $('#phone').textContent      = data.phone ?? 0;
-            $('#email').textContent      = data.email ?? 0;           // allerede cappet server-side
+            $('#email').textContent      = data.email ?? 0;  // allerede cappet server-side
             $('#email_link').textContent = data.email_link ?? 0;
             $('#text_copy').textContent  = data.text_copy ?? 0;
             $('#download').textContent   = data.download ?? 0;
             $('#fb_share').textContent   = data.fb_share ?? 0;
+            
+            // Engasjement fra server:
+            const engaged = data.engaged ?? 0;
+            const uniqCount = data.uniq ?? 0;
+            const pct = uniqCount ? Math.round((engaged/uniqCount)*100) : 0;
+            $('#engagement').textContent = `${engaged} / ${uniqCount} (${pct}%)`;
         
             const nowTime = new Date().toLocaleTimeString('nb-NO', {
               hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'
@@ -250,7 +256,7 @@
         async function exportCSV(){
           try{
             setStatus('Lager CSV…');
-            const { events } = await callAdmin('counts');
+            const { events } = await callAdmin('export'); // <-- NY op
             const rows = [['created_at','event_type','visitor_id']];
             (events||[]).forEach(r => rows.push([r.created_at, r.event_type, r.visitor_id || '']));
             const csv = rows.map(r => r.map(v => {
