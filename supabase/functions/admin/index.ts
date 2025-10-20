@@ -56,17 +56,29 @@ serve(async (req) => {
     }
     
     if (op === "export") {
-      // Rå events for CSV
-      const r = await fetch(`${url}/rest/v1/events?select=created_at,event_type,visitor_id&order=created_at.asc`, {
-        headers: svcHdrs
-      });
-      if (!r.ok) {
-        const t = await r.text();
-        return new Response(JSON.stringify({ error: "export failed", detail: t }), { status: 500, headers: baseHdrs });
+      const CHUNK = 1000;
+      let start = 0;
+      const events: Array<{created_at:string; event_type:string; visitor_id:string|null}> = [];
+    
+      while (true) {
+        const end = start + CHUNK - 1;
+        const r = await fetch(
+          `${url}/rest/v1/events?select=created_at,event_type,visitor_id&order=created_at.asc`,
+          { headers: { ...svcHdrs, Range: `${start}-${end}`, Prefer: "count=exact" } }
+        );
+        if (!r.ok) {
+          const t = await r.text();
+          return new Response(JSON.stringify({ error: "export failed", detail: t }), { status: 500, headers: baseHdrs });
+        }
+        const batch = await r.json();
+        events.push(...batch);
+        if (batch.length < CHUNK) break; // siste side
+        start += CHUNK;
       }
-      const events = await r.json();
+    
       return new Response(JSON.stringify({ events }), { headers: baseHdrs });
     }
+
 
     if (op === "reset") {
       const now = new Date().toISOString();
