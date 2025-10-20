@@ -42,49 +42,44 @@ serve(async (req) => {
     }
 
     if (op === "counts") {
-      const rVisitors = await fetch(
-        `${url}/rest/v1/visitors?select=count:count()`,
-        { headers: svcHdrs }
-      );
-      if (!rVisitors.ok) return new Response(JSON.stringify({ error: "visitors failed" }), { status: 500, headers: baseHdrs });
-      const [{ count: uniq }] = await rVisitors.json();
+      async function getCount(path: string): Promise<number> {
+        const r = await fetch(`${url}/rest/v1/${path}`, {
+          headers: { ...svcHdrs, Prefer: "count=exact" }
+        });
+        if (!r.ok) throw new Error(`count failed for ${path}`);
+        const cr = r.headers.get("content-range") || "0-0/0";
+        const total = parseInt(cr.split("/")[1] || "0", 10);
+        return Number.isFinite(total) ? total : 0;
+      }
     
-      const rGrouped = await fetch(
-        `${url}/rest/v1/events?select=event_type,count:count()`,
-        { headers: svcHdrs }
-      );
-      if (!rGrouped.ok) return new Response(JSON.stringify({ error: "grouped failed" }), { status: 500, headers: baseHdrs });
-      const grouped: Array<{event_type: string; count: number}> = await rGrouped.json();
+      const uniq = await getCount(`visitors?select=id&limit=1`);
     
-      const get = (t: string) => grouped.find(g => g.event_type === t)?.count || 0;
-      const phone      = get('phone');
-      const email_link = get('email_link');
-      const text_copy  = get('text_copy');
-      const download   = get('download');
-      const fb_share   = get('fb_share');
+      const phone      = await getCount(`events?event_type=eq.phone&select=event_type&limit=1`);
+      const email_link = await getCount(`events?event_type=eq.email_link&select=event_type&limit=1`);
+      const text_copy  = await getCount(`events?event_type=eq.text_copy&select=event_type&limit=1`);
+      const download   = await getCount(`events?event_type=eq.download&select=event_type&limit=1`);
+      const fb_share   = await getCount(`events?event_type=eq.fb_share&select=event_type&limit=1`);
     
-      const rEmailPerUser = await fetch(
-        `${url}/rest/v1/events?select=visitor_id,count:count()&event_type=eq.email`,
-        { headers: svcHdrs }
-      );
-      if (!rEmailPerUser.ok) return new Response(JSON.stringify({ error: "email per user failed" }), { status: 500, headers: baseHdrs });
-      const emailPerUser: Array<{visitor_id: string|null; count: number}> = await rEmailPerUser.json();
-      const email = emailPerUser.reduce((sum, row) => sum + Math.min(2, row.count || 0), 0);
+      //    capped = min(total_email, 2 * unique_emailers)
+      const email_total   = await getCount(`events?event_type=eq.email&select=event_type&limit=1`);
+      const email_unique  = await getCount(`events?event_type=eq.email&select=visitor_id&distinct=visitor_id&limit=1`);
+      const email = Math.min(email_total, 2 * email_unique);
     
       const rStart = await fetch(
-        `${url}/rest/v1/events?select=min:created_at`,
+        `${url}/rest/v1/events?select=created_at&order=created_at.asc&limit=1`,
         { headers: svcHdrs }
       );
       let campaign_start: string | null = null;
       if (rStart.ok) {
-        const [{ min }] = await rStart.json();
-        campaign_start = min || null;
+        const arr = await rStart.json();
+        if (Array.isArray(arr) && arr[0]?.created_at) campaign_start = arr[0].created_at;
       }
     
       return new Response(JSON.stringify({
         uniq, phone, email, email_link, text_copy, download, fb_share, campaign_start
       }), { headers: baseHdrs });
     }
+
 
     if (op === "reset") {
       const now = new Date().toISOString();
