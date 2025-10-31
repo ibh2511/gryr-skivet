@@ -455,7 +455,6 @@
   
     // ======== Logging til Edge Function (med force + beacon-støtte) ========
     async function logEvent(event_type, { force = false, beacon = false } = {}){
-      // bypass rate-limit for fb_share når force=true
       if (!force) {
         const COOLDOWN_MS = 1500;
         const key = 'rl_' + event_type;
@@ -474,11 +473,10 @@
       if (beacon && navigator.sendBeacon) {
         try {
           const ok = navigator.sendBeacon(LOG_URL, new Blob([payloadStr], { type: 'text/plain;charset=UTF-8' }));
-          if (ok) return; // sendt – ferdig
-        } catch (e) { /* fallthrough to fetch */ }
+          if (ok) return; 
+        } catch (e) 
       }
     
-      // 2) Fallback til fetch (keepalive for «under focus change»)
       try{
         await fetch(LOG_URL, {
           method: "POST",
@@ -545,7 +543,7 @@
           cachedStartStr = formatDateNo(iso);
         }
     
-        const line = `Kampanjestart: ${cachedStartStr} | E-postklikk: ${email_unique ?? 0}`;
+        const line = `Kampanjestart: ${cachedStartStr}  |  E-postklikk: ${email_unique ?? 0}`;
         const el = document.getElementById('publicMeta');
         if (el) el.textContent = line;
       }catch(e){
@@ -558,7 +556,6 @@
       try {
         setStatus('Kobler til…');
     
-        // Start public stats umiddelbart + hvert 10. sekund (unngå doble intervaller)
         if (typeof fetchPublicStats === 'function') {
           fetchPublicStats();
           if (!window.__publicStatsTimer) {
@@ -611,7 +608,6 @@
       emoji.className = 'fb-share iab-disabled';
       emoji.setAttribute('aria-label', 'Deling er deaktivert i denne app-leseren');
     
-      // Erstatt lenken med emoji (event-lytteren på lenken forsvinner med elementet)
       shareLink.parentNode.replaceChild(emoji, shareLink);
     })();
 
@@ -633,7 +629,6 @@
       if (pOrig) pOrig.hidden = true;
       if (pIab)  pIab.hidden  = false;
     
-      // Ferdig tekst (kun body – uten unødige innrykk)
   const MAIL_BODY = `Hei Tine,
 
 😞 Det er kjedelig når bra produkter forsvinner fra butikkene.
