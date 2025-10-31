@@ -488,7 +488,7 @@
         }
     
         const line = `Kampanjen startet: ${cachedStartStr} | E-post klikk unike: ${email_unique ?? 0}`;
-        const el = document.getElementById('statsLine');
+        const el = document.getElementById('publicMeta');
         if (el) el.textContent = line;
       }catch(e){
         console.warn("public stats failed:", e?.message || e);
