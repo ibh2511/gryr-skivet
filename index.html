@@ -233,6 +233,7 @@
       z-index: 100000;      
     }
 
+    .status[hidden]{ display:none !important; }
   
     @media (max-width: 768px){
       h1.brand{ display:none; }
@@ -379,9 +380,13 @@
     </div>
   </footer>
     
-  <div class="status" id="status">kobler…</div>
+  <div class="status" id="status" hidden>kobler…</div>
 
   <script>
+    // Debug er PÅ hvis ?debug=1 i URL eller localStorage.debug === "1"
+    const DEBUG = /[?&]debug=1/.test(location.search) || localStorage.getItem('debug') === '1';
+    if (DEBUG) document.documentElement.classList.add('debug');
+    
     // ======== Konfig (injiseres av Actions) ========
     const FN_BASE = "https://__PROJECT_REF__.functions.supabase.co";
     const PUBLIC_URL = FN_BASE + "/public";
@@ -389,7 +394,11 @@
   
     // ======== UI-status ========
     const statusEl = document.getElementById('status');
-    const setStatus = (m) => { if (statusEl) statusEl.textContent = m; };
+    function setStatus(msg){
+      if (!DEBUG) return; // ikke vis noe i prod
+      const el = document.getElementById('status');
+      if (el) { el.hidden = false; el.textContent = msg; }
+    }
   
     // ======== Rate-limit pr. event-type ========
     const COOLDOWN_MS = 1500;
