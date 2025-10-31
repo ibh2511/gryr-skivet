@@ -1,0 +1,3 @@
+# supabase/functions/public/config.toml
+[functions]
+verify_jwt = false
