@@ -287,6 +287,14 @@
         text-overflow: ellipsis;    
         max-width: 100%;
       }
+
+      .public-meta{
+        display:flex; align-items:center; gap:10px;
+        white-space: nowrap;                 /* 1 linje */
+        font-weight:800;
+        font-size: clamp(12px,3vw,14px);
+      }
+      .public-meta .arm{ line-height:1; }
     
   </style>
 
@@ -348,9 +356,11 @@
   </div>
 
   <footer>
-    <div class="footer-inner stats-footer">
-      <div class="stats-emoji" aria-hidden="true">🦾</div>
-      <div id="statsLine" class="stats-line" title="Kampanjeinformasjon">—</div>
+    <div class="footer-inner">
+      <div class="public-meta">
+        <div class="arm">🦾</div>
+        <span id="publicMeta">—</span>
+      </div>
     </div>
   </footer>
 
@@ -453,63 +463,73 @@
       }
     }
 
-    // Fallback, hvis API ikke returnerer start (hindrer tom tekst ved første last)
-    const CAMPAIGN_START = '2025-10-05'; // YYYY-MM-DD
-    
-    function formatDateNo(dateStr){
-      try { return new Date(dateStr).toLocaleDateString('nb-NO'); }
-      catch { return dateStr; }
+    // --- Hjelpere brukt av fetchPublicStats ---
+    const CAMPAIGN_START = '2025-10-05'; // sett riktig dato (YYYY-MM-DD)
+    let cachedStartStr = '';
+    function formatDateNo(isoLike){
+      try { return new Date(isoLike).toLocaleDateString('nb-NO'); }
+      catch { return '—'; }
     }
-    
-    let cachedStartStr = null;
-    
+  
     async function fetchPublicStats(){
       try{
-        const r = await fetch(PUBLIC_URL, {
-          method: "POST",
-          headers: { "Content-Type":"application/json" },
-          body: JSON.stringify({})
-        });
-        if (!r.ok) throw new Error(await r.text());
-        const { email_unique, campaign_start } = await r.json();
-    
-        // Kampanjestart (bruk API hvis mulig; ellers fallback)
+        // Prøv GET først (anbefalt for /public). Fall back til POST hvis GET feiler.
+        const run = async (method) => {
+          const opts = (method === 'GET')
+            ? { method:'GET', headers:{ 'Accept':'application/json' } }
+            : { method:'POST', headers:{ 'Content-Type':'application/json' }, body:'{}' };
+          const r = await fetch(PUBLIC_URL, opts);
+          if (!r.ok) throw new Error(await r.text());
+          return r.json();
+        };
+  
+        let data;
+        try {
+          data = await run('GET');
+        } catch {
+          data = await run('POST');
+        }
+  
+        const { email_unique = 0, campaign_start = null } = data;
+  
+        // Kampanjestart: bruk API hvis mulig; ellers fallback til konstanten din
         if (!cachedStartStr) {
           const startIso = campaign_start || (CAMPAIGN_START + 'T00:00:00Z');
           cachedStartStr = formatDateNo(startIso);
         }
-    
-        const line = `Kampanjen startet: ${cachedStartStr} | E-post klikk unike: ${email_unique ?? 0}`;
-        const el = document.getElementById('statsLine');
-        if (el) el.textContent = line;
+  
+        const line = `Kampanjen startet: ${cachedStartStr} | E-post klikk (unike): ${email_unique}`;
+        (document.getElementById('statsLine') || document.getElementById('publicMeta'))?.textContent = line;
       }catch(e){
-        // Ved feil – behold forrige verdi, ikke spam status
         console.warn('public stats failed', e?.message || e);
+        // Behold forrige verdi i UI
       }
     }
     
     // ======== Boot ========
     (async () => {
-        try {
-          setStatus('Kobler til…');
+      try {
+        setStatus('Kobler til…');
     
-          // Start public stats umiddelbart + hvert 10. sekund
-          if (typeof fetchPublicStats === 'function') {
-            fetchPublicStats();
-            setInterval(fetchPublicStats, 10000);
+        // Start public stats umiddelbart + hvert 10. sekund (unngå doble intervaller)
+        if (typeof fetchPublicStats === 'function') {
+          fetchPublicStats();
+          if (!window.__publicStatsTimer) {
+            window.__publicStatsTimer = setInterval(fetchPublicStats, 10000);
           }
-    
-          if (!localStorage.getItem("visited_once")) {
-            await logEvent('visit');
-            localStorage.setItem("visited_once","1");
-          }
-    
-          setStatus('Tilkoblet ✓');
-        } catch (e) {
-          console.error(e);
-          setStatus('feil: ' + (e?.message || 'ukjent'));
         }
-      })();
+    
+        if (!localStorage.getItem("visited_once")) {
+          await logEvent('visit');
+          localStorage.setItem("visited_once","1");
+        }
+    
+        setStatus('Tilkoblet ✓');
+      } catch (e) {
+        console.error(e);
+        setStatus('feil: ' + (e?.message || 'ukjent'));
+      }
+    })();
   
     // ======== Klikk-handlere ========
     document.getElementById('telLink')?.addEventListener('click', () => logEvent('phone'));
