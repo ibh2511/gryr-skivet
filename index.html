@@ -176,25 +176,40 @@
       cursor:pointer; font-size:13px;
     }
     .mini-btn:hover{ background:rgba(255,255,255,.14); }
-
-      
+    
     footer{
       position: relative;
-      height: var(--footer-h);
       background: var(--footer-bg);
       margin: 0;
       padding: 0;
-      margin-top: auto;        /* <- presser footeren helt ned */
+      margin-top: auto;
       z-index: 99999;
-      transform: none !important;
-      filter: none !important;
-      backdrop-filter: none !important;
-      pointer-events: auto;
     }
+    
     .footer-inner{
-      max-width:960px; height:100%;
-      margin:0 auto; padding:0 var(--pad);
-      display:flex; align-items:center; justify-content:center;
+      max-width:960px;
+      margin:0 auto;
+      padding:8px var(--pad);
+      height:auto;                  
+      display:flex;
+      flex-direction:column;     
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    
+    .footer-badge{
+      font-size:20px;
+      line-height:1;
+    }
+    
+    .footer-stats{
+      font-weight:400;             
+      white-space:nowrap;          
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:clamp(12px,3.2vw,14px);
+      opacity:.95;
     }
     .fb-share{
       display:inline-flex; align-items:center; gap:8px;
@@ -357,13 +372,11 @@
 
   <footer>
     <div class="footer-inner">
-      <div class="public-meta">
-        <div class="arm">🦾</div>
-        <span id="publicMeta">—</span>
-      </div>
+      <span class="footer-badge" aria-hidden="true">🦾</span>
+      <span id="publicMeta">—</span>
     </div>
   </footer>
-
+    
   <div class="status" id="status">kobler…</div>
 
   <script>
@@ -466,9 +479,14 @@
     // --- Hjelpere brukt av fetchPublicStats ---
     const CAMPAIGN_START = '2025-10-05'; // sett riktig dato (YYYY-MM-DD)
     let cachedStartStr = '';
-    function formatDateNo(isoLike){
-      try { return new Date(isoLike).toLocaleDateString('nb-NO'); }
-      catch { return '—'; }
+    function formatDateNo(iso){
+      const d = new Date(iso);
+      if (isNaN(d)) return '—';
+      const dd = String(d.getDate()).padStart(2, '0');
+      const months = ['jan','feb','mar','apr','mai','jun','jul','aug','sep','okt','nov','des'];
+      const m = months[d.getMonth()];
+      const yy = String(d.getFullYear()).slice(-2);
+      return `${dd}. ${m} ${yy}`;
     }
   
     async function fetchPublicStats(){
@@ -487,7 +505,7 @@
           cachedStartStr = formatDateNo(iso);
         }
     
-        const line = `Kampanjen startet: ${cachedStartStr} | E-post klikk unike: ${email_unique ?? 0}`;
+        const line = `Kampanje start: ${cachedStartStr} | E-post klikk: ${email_unique ?? 0}`;
         const el = document.getElementById('publicMeta');
         if (el) el.textContent = line;
       }catch(e){
