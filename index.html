@@ -281,38 +281,65 @@
     .copy-badge:focus { outline: 1px solid rgba(255,255,255,.5); outline-offset: 2px; }
     .copy-badge .txt { font-weight: 700; }
 
-    .stats-footer{
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2px;
-        display: flex;
-        height: var(--footer-h);
-      }
-      
-      .stats-emoji{
-        line-height: 1;
-        font-size: 16px;
-        transform: translateY(-2px);
-      }
-      
-      .stats-line{
-        font-size: 12px;
-        opacity: .95;
-        white-space: nowrap;        
-        overflow: hidden;         
-        text-overflow: ellipsis;    
-        max-width: 100%;
-      }
+    /* Toppstripe med stat-linje (uten emoji) */
+    .top-meta-outer{
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .top-meta{
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      background: rgba(255,255,255,.10);
+      border-bottom: 1px solid rgba(255,255,255,.22);
+      backdrop-filter: saturate(120%) blur(2px);
+    }
+    .top-meta .meta-line{
+      font-weight: 400;                
+      font-size: clamp(12px, 3.2vw, 13px);
+      letter-spacing: .2px;
+      opacity: .95;
+      white-space: nowrap;        
+      max-width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
 
-      .public-meta{
-        display:flex; align-items:
-        center; 
-        gap:10px;
-        white-space: nowrap;                
-        font-size: clamp(12px,3vw,14px);
-      }
-      .public-meta .arm{ line-height:1; }
+    .stats-footer{
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 2px;
+      display: flex;
+      height: var(--footer-h);
+    }
+      
+    .stats-emoji {
+      line-height: 1;
+      font-size: 16px;
+      transform: translateY(-2px);
+    }
+    
+    .stats-line{
+      font-size: 12px;
+      opacity: .95;
+      white-space: nowrap;        
+      overflow: hidden;         
+      text-overflow: ellipsis;    
+      max-width: 100%;
+    }
+
+    .public-meta{
+      display:flex; align-items:
+      center; 
+      gap:10px;
+      white-space: nowrap;                
+      font-size: clamp(12px,3vw,14px);
+    }
+    .public-meta .arm{ line-height:1; }
     
   </style>
 
@@ -320,6 +347,11 @@
 
   </head>
   <body>
+    <div class="top-meta-outer">
+      <div class="top-meta">
+        <div class="meta-line" id="publicMeta">—</span>
+      </div>
+    </div>
     <div class="wrap">
     <div class="hero">
       <h1 class="brand">GRYR® SKIVET / GRYR® REVET</h1>
@@ -376,7 +408,6 @@
   <footer>
     <div class="footer-inner">
       <span class="footer-badge" aria-hidden="true">🦾</span>
-      <span id="publicMeta">—</span>
     </div>
   </footer>
     
