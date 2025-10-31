@@ -545,7 +545,7 @@
           cachedStartStr = formatDateNo(iso);
         }
     
-        const line = `Kampanjestart: ${cachedStartStr} &nbsp; | &nbsp; E-postklikk: ${email_unique ?? 0}`;
+        const line = `Kampanjestart: ${cachedStartStr} | E-postklikk: ${email_unique ?? 0}`;
         const el = document.getElementById('publicMeta');
         if (el) el.textContent = line;
       }catch(e){
